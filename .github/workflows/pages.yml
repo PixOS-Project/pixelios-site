@@ -1,0 +1,57 @@
+name: docs
+
+# Builds the documentation site with MkDocs Material and publishes it to GitHub Pages.
+# The site is assembled from docs/, soc/*/ and device/*/ by tools/build-site.py, so adding a
+# device tree adds its page. Repository setting: Settings -> Pages -> Source: GitHub Actions.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/**"
+      - "device/**"
+      - "soc/**"
+      - "tools/build-site.py"
+      - "CONTRIBUTING.md"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: PixOS-Project/pixelios-kernel
+          path: kernel
+      - run: ln -s kernel/soc soc && ln -s kernel/device device   # build-site.py reads soc/ and device/
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install "mkdocs<2" mkdocs-material
+      - run: python3 tools/build-site.py
+      - run: mkdocs build --strict -f .site/mkdocs.yml -d site
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
