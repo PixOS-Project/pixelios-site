@@ -2,7 +2,7 @@
 
 Documentation for the PixeliOS port (Apple XNU and iOS 16 on a Google Pixel 6a, Tensor G1): status, plan, milestones,
 the case study, the porting guide, the code map, credits and the AI-development note. Published at
-<https://pixos-project.github.io/pixelios/> (guess: the final address may change when the split is published).
+<https://pixos-project.github.io/pixelios-site/> (guess: the final address may change when the split is published).
 
 > **AI-driven development.** This project is written mostly by AI coding agents under the direction of a human maintainer, who owns the phone
 > and decides what is flashed or published. Read the code before you trust it. Details: [docs/AI_DEVELOPMENT.md](docs/AI_DEVELOPMENT.md).

@@ -18,7 +18,7 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, ".site"))
 SRC = os.path.join(OUT, "src")
-GH = "https://github.com/PixOS-Project/pixelios/blob/main/"
+GH = "https://github.com/PixOS-Project/pixelios-kernel/blob/main/"
 UPSTREAM = "https://github.com/dipa-studio/ios-sweet/blob/11da58bd050672960c0a83b5bef2176047eea479/"
 
 pages = {}      # original repo path -> site path (under src/)
@@ -222,15 +222,17 @@ for vendor, name, base in socs:
     nav.append("          - Overview: socs/%s/%s/index.md" % (vendor, name))
     for p in sorted(x for x in pages.values() if x.startswith("socs/%s/%s/" % (vendor, name)) and not x.endswith("index.md")):
         nav.append("          - \"%s\": %s" % (title(p), p))
-nav += ["  - Research:"] + [entry(p) for p in sorted(x for x in pages.values() if x.startswith("research/"))]
-nav += ["  - Reviews:"] + [entry(p) for p in sorted(x for x in pages.values() if x.startswith("reviews/"))]
+_l = [entry(p) for p in sorted(x for x in pages.values() if x.startswith("research/"))]
+nav += (["  - Research:"] + _l) if _l else []   # mkdocs rejects an empty section
+_l = [entry(p) for p in sorted(x for x in pages.values() if x.startswith("reviews/"))]
+nav += (["  - Reviews:"] + _l) if _l else []   # mkdocs rejects an empty section
 nav += ["  - Credits: CREDITS.md"]
 
 cfg = """site_name: PixeliOS
 site_description: Apple's XNU and iOS 16 on the Google Pixel 6a (Tensor G1), with device trees for other Pixels
-site_url: https://pixos-project.github.io/pixelios/
-repo_url: https://github.com/PixOS-Project/pixelios
-repo_name: PixOS-Project/pixelios
+site_url: https://pixos-project.github.io/pixelios-site/
+repo_url: https://github.com/PixOS-Project/pixelios-site
+repo_name: PixOS-Project/pixelios-site
 docs_dir: src
 theme:
   name: material

@@ -22,7 +22,7 @@ Inspired by, and built on, [ios-sweet](https://github.com/dipa-studio/ios-sweet)
 | I want to... | Go to |
 |---|---|
 | see what works today | [Status](STATUS.md) |
-| build and boot the shim | [Build](https://github.com/PixOS-Project/pixelios-kernel/blob/main/docs/BUILD.md), then the [README quick start](https://github.com/PixOS-Project/pixelios#quick-start) |
+| build and boot the shim | [Build](https://github.com/PixOS-Project/pixelios-kernel/blob/main/docs/BUILD.md), then the [README quick start](https://github.com/PixOS-Project/pixelios-kernel#quick-start) |
 | read the log without a serial cable | [QR log channel](https://github.com/PixOS-Project/pixelios-kernel/blob/main/docs/QR_LOG.md) |
 | drive the hardware test loop (`xrun`, `ci-kernel`) | [Automation](https://github.com/PixOS-Project/pixelios-kernel/blob/main/docs/AUTOMATION.md) |
 | build the iOS root image without sudo | [Rootless build](https://github.com/PixOS-Project/pixelios-userland/blob/main/docs/ROOTLESS_BUILD.md) |
