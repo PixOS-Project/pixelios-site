@@ -40,7 +40,7 @@ jobs:
           python-version: "3.12"
       - run: pip install "mkdocs<2" mkdocs-material
       - run: python3 tools/build-site.py
-      - run: mkdocs build --strict -f .site/mkdocs.yml -d site
+      - run: mkdocs build --strict -f .site/mkdocs.yml -d "$GITHUB_WORKSPACE/site"
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
