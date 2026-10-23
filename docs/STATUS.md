@@ -4,8 +4,8 @@ Target: Google Pixel 6a ("bluejay", Tensor G1 / gs101), unlocked bootloader. The
 temporary `fastboot boot` images; the only partition ever written is `userdata` (the iOS root).
 
 Legend: **works** = observed on hardware (date and build given), **builds** = compiles and host-tests only,
-**partial**, **todo**. Evidence tags: *observed on hardware*, *read from source*, *guess*. Last update: 2026-10-22
-(private handoff through session 17). What is planned next: [ROADMAP.md](../ROADMAP.md).
+**partial**, **todo**. Evidence tags: *observed on hardware*, *read from source*, *guess*. Last update: 2026-10-23
+(private handoff through session 24). What is planned next: [ROADMAP.md](../ROADMAP.md).
 
 ## Where the project is (one paragraph)
 
@@ -61,12 +61,12 @@ patches 0086 (no IOKit busy hold, empty IOAcceleratorES) and 0087 (container-pat
 
 | Area | State | Evidence |
 |---|---|---|
-| Wi-Fi (Broadcom BCM4389 on PCIe) | **todo**, planned | Plan in [research 20](https://github.com/PixOS-Project/pixelios-kernel/blob/main/docs/research/20-wifi-stack-plan.md), summary below. `--wlan-probe` shim option exists (read-only), **never run on hardware** |
+| Wi-Fi (Broadcom BCM4389 on PCIe) | **partial**: PCIe link up and the chip is readable, no driver yet | *observed on hardware, 2026-10-23, shim runs w3a-n23..n27*: rails, WLAN_EN, PHY and PERST sequenced from the shim (table-driven, audited, always restored), PCIe1 link trains to L0 (Gen1 x1), outbound iATU programmed, the endpoint answers config reads (vendor 0x14E4 Broadcom, device 0x4441, class network controller) and its full config space was dumped read-only (BAR0/BAR2 are 64-bit memory BARs, not yet assigned). Next: BAR sizing/assignment, first register read, firmware download. Every step is listed with its evidence in [WIFI-COVERAGE](https://github.com/PixOS-Project/pixelios-kernel/blob/main/docs/WIFI-COVERAGE.md); code on `pixelios-kernel` main (`shim/wlanlink.c`, `soc/google/gs101/wlan_seq.json`), reviews in `docs/reviews/wlan-stage1-review-*.md` |
 | USB under XNU (CDC-ECM network, UDP live log on 192.168.7.x port 5140) | **works** (2026-10-22) | *observed*: host pings the phone, >3000 log lines per run; this is the debug channel (`tools/xrun`, `tools/usbnet-log.py`), the QR log is only a fallback. Needs one `sudo` line on the host to give the interface an address |
 | GPU (Mali-G78 MP20) | todo, research only | `research/17`, `research/18`; `--gpu-probe` shim option never run on hardware; biggest blocker *read from source*: power domain and clocks sit behind EL3/ACPM |
 | Modem, camera, audio | todo | no drivers; the Camera app does not open and its lock-screen shortcut does nothing |
 
-## Wi-Fi plan in brief (*read from source*, desk research 2026-10-22, nothing run on a phone)
+## Wi-Fi plan in brief (*read from source*, desk research 2026-10-22; the bring-up status is in the table above)
 
 - The radio is a BCM4389 on `pcie_1`; mainline brcmfmac has no 4389 entry, Apple's own Wi-Fi kexts are not usable and
   our XNU cannot load kexts, so the driver has to be **built into the kernel** by numbered patch.
