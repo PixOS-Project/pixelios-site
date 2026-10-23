@@ -8,7 +8,7 @@ the case study, the porting guide, the code map, credits and the AI-development 
 > and decides what is flashed or published. Read the code before you trust it. Details: [docs/AI_DEVELOPMENT.md](docs/AI_DEVELOPMENT.md).
 
 Status (*observed on hardware*, 2026-10-22): XNU boots on the Pixel, launchd runs, the iOS lock screen and home screen appear
-and touch works; the UI is slow, and Wi-Fi, GPU, audio, camera and modem are still to do. See `docs/STATUS.md`.
+and touch works; the UI is slow. Wi-Fi bring-up has started (PCIe link up, the BCM4389 answers) and the GPU executes jobs; no Wi-Fi traffic or GPU rendering yet. Audio, camera and modem are still to do. See `docs/STATUS.md`.
 
 Code lives in the other repositories:
 [pixelios-kernel](https://github.com/PixOS-Project/pixelios-kernel) (pre-kernel shim, XNU patches, SoC and device trees, tools) and
