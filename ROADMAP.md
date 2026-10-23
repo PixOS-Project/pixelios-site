@@ -25,7 +25,7 @@ This page lists what comes next. Order and estimates are guesses, not promises.
 ## Later
 
 - **Wi-Fi** (milestone 2): PCIe/PHY bring-up behind EL3/ACPM, firmware handling, an `apple80211` front end for iOS.
-- **GPU**: Mali-G78 power domain and clocks sit behind the secure world; research only so far.
+- **GPU**: the Mali-G78 runs jobs from the shim and from XNU (rail through ACPM, reset works); the userland stack (Mesa panfrost, EAGL shim) builds in CI and is being brought up on the phone. See [docs/COVERAGE.md](docs/COVERAGE.md).
 - Audio, Bluetooth, camera, sensors, modem. No work started.
 - Other Tensor phones (Pixel 6, 6 Pro share the SoC tree): see [docs/PORTING.md](docs/PORTING.md).
 
