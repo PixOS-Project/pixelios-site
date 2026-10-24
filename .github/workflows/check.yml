@@ -1,0 +1,30 @@
+name: check
+
+# TP-019: on pull requests and weekly, run the site gate (cross-repo links, evidence tags,
+# staleness, secrets). A failing weekly run opens an issue so drift is noticed.
+
+on:
+  pull_request:
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with: {repository: PixOS-Project/pixelios-kernel, path: kernel, fetch-depth: 0}
+      - uses: actions/checkout@v4
+        with: {repository: PixOS-Project/pixelios-userland, path: userland, fetch-depth: 0}
+      - run: python3 tools/test_check_site.py
+      - shell: bash
+        run: python3 tools/check-site.py --kernel kernel --userland userland | tee report.txt
+      - if: failure() && github.event_name == 'schedule'
+        env: {GH_TOKEN: "${{ github.token }}"}
+        run: gh issue create -R "$GITHUB_REPOSITORY" -t "Site drift (weekly check)" -F report.txt

@@ -12,6 +12,7 @@ on:
       - "device/**"
       - "soc/**"
       - "tools/build-site.py"
+      - "tools/check-site.py"
       - "CONTRIBUTING.md"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
@@ -34,6 +35,13 @@ jobs:
         with:
           repository: PixOS-Project/pixelios-kernel
           path: kernel
+          fetch-depth: 0
+      - uses: actions/checkout@v4
+        with:
+          repository: PixOS-Project/pixelios-userland
+          path: userland
+          fetch-depth: 0
+      - run: python3 tools/test_check_site.py && python3 tools/check-site.py --kernel kernel --userland userland   # TP-019 gate
       - run: ln -s kernel/soc soc && ln -s kernel/device device   # build-site.py reads soc/ and device/
       - uses: actions/setup-python@v5
         with:
