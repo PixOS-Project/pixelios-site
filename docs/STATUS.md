@@ -4,8 +4,8 @@ Target: Google Pixel 6a ("bluejay", Tensor G1 / gs101), unlocked bootloader. The
 temporary `fastboot boot` images; the only partition ever written is `userdata` (the iOS root).
 
 Legend: **works** = observed on hardware (date and build given), **builds** = compiles and host-tests only,
-**partial**, **todo**. Evidence tags: *observed on hardware*, *read from source*, *guess*. Last update: 2026-10-23
-(private handoff through session 24). What is planned next: [ROADMAP.md](../ROADMAP.md).
+**partial**, **todo**. Evidence tags: *observed on hardware*, *read from source*, *guess*. Last update: 2026-10-24
+(private handoff through session 29). What is planned next: [ROADMAP.md](../ROADMAP.md).
 
 ## Where the project is (one paragraph)
 
@@ -13,7 +13,7 @@ Legend: **works** = observed on hardware (date and build given), **builds** = co
 `userdata`, runs launchd and ~60 daemons and reaches the **iOS lock screen and home screen** (SpringBoard) with the panel
 showing the real iOS UI. **Touch works** (STMicro FTM5 over SPI, powered through an ACPM call from the shim) and the iOS UI reacts to taps and swipes.
 **Settings -> General -> About opens in about a second** (it used to hang for 5 minutes). The UI is still slow (software
-rendering, no GPU). Wi-Fi, GPU, audio, camera and the modem are not working. Milestone 1 (iPhone GUI on the Pixel 6a) is reached;
+rendering; the GPU is not used for drawing yet). Wi-Fi, GPU, audio, camera and the modem are not working. Milestone 1 (iPhone GUI on the Pixel 6a) is reached;
 milestone 2 is real Wi-Fi.
 
 ## Boot chain and storage
@@ -61,7 +61,7 @@ patches 0086 (no IOKit busy hold, empty IOAcceleratorES) and 0087 (container-pat
 
 | Area | State | Evidence |
 |---|---|---|
-| Wi-Fi (Broadcom BCM4389 on PCIe) | **partial**: PCIe link up and the chip is readable, no driver yet | *observed on hardware, 2026-10-23, shim runs w3a-n23..n27*: rails, WLAN_EN, PHY and PERST sequenced from the shim (table-driven, audited, always restored), PCIe1 link trains to L0 (Gen1 x1), outbound iATU programmed, the endpoint answers config reads (vendor 0x14E4 Broadcom, device 0x4441, class network controller) and its full config space was dumped read-only (BAR0/BAR2 are 64-bit memory BARs, not yet assigned). Next: BAR sizing/assignment, first register read, firmware download. Every step is listed with its evidence in [WIFI-COVERAGE](https://github.com/PixOS-Project/pixelios-kernel/blob/main/docs/WIFI-COVERAGE.md); code on `pixelios-kernel` main (`shim/wlanlink.c`, `soc/google/gs101/wlan_seq.json`), reviews in `docs/reviews/wlan-stage1-review-*.md` |
+| Wi-Fi (Broadcom BCM4389 on PCIe) | **partial**: PCIe link up, the chip's registers are readable from the shim, no driver and no firmware yet | *observed on hardware, 2026-10-23/24, shim runs w3a-n23..n30*: rails, WLAN_EN, PHY and PERST sequenced from the shim (table-driven, audited, always restored), PCIe1 link trains to L0 (Gen1 x1), outbound iATU programmed, the endpoint answers config reads (vendor 0x14E4 Broadcom, device 0x4441, class network controller), its config space was dumped read-only, BAR0 (64 KiB) and BAR2 (4 MiB) were sized and assigned (first config writes), and the first register read through BAR0 returned the ChipCommon chip id (low 16 bits 0x4389 = BCM4389) with no bus hang. Next: backplane core enumeration, firmware and NVRAM download (protocol researched from the Broadcom DHD source, not implemented). Every step is listed with its evidence in [Coverage](COVERAGE.md) and [WIFI-COVERAGE](https://github.com/PixOS-Project/pixelios-kernel/blob/main/docs/WIFI-COVERAGE.md). Published code (`shim/wlanlink.c`, `soc/google/gs101/wlan_seq.json`) on `pixelios-kernel` `main` reaches stage S27 (config dump); stages S28-S30 (BAR assignment, chip id) are on a local branch that has not been pushed yet; reviews in `docs/reviews/wlan-stage1-review-*.md` |
 | USB under XNU (CDC-ECM network, UDP live log on 192.168.7.x port 5140) | **works** (2026-10-22) | *observed*: host pings the phone, >3000 log lines per run; this is the debug channel (`tools/xrun`, `tools/usbnet-log.py`), the QR log is only a fallback. Needs one `sudo` line on the host to give the interface an address |
 | GPU (Mali-G78 MP20) | **partial**: powered and executing jobs from the shim and from XNU, no renderer yet | *observed on hardware, 2026-10-23* (GPU agent, runs g0, railon2, job1, gpujob1, mali1, malireset1): shader rail enabled through ACPM, GPU_ID read back (0x92020010), first job (address space + page tables + WRITE_VALUE) executed, the same from inside XNU, GPU reset and a job after reset pass. *Observed on hardware, 2026-10-23 (runs gputest2/3)*: an iOS userland binary started by launchd opens the `SweetMali` IOKit user client and queries the GPU, and allocates a GPU buffer; the next step (mapping that buffer into the process) panics the kernel (`phystokv_range: illegal PA`), under investigation. *Built in CI, never run on the phone*: Mesa 26.2.5 panfrost cross-built for iOS arm64 with our patches, a libdrm emulation over the user client, an EAGL shim with a GL dispatch table, and a `libsweetgl.dylib` for `backboardd`. Not done: a GPU-rendered frame, interrupt path (polling today), `backboardd` injection tested. Coverage: [docs/COVERAGE.md](COVERAGE.md). Research in `docs/research/17-18, 27-35` of `pixelios-kernel`, code on the `wip/gpu-accel` (kernel) and `wip/gpu-mesa` (userland) branches |
 | Modem, camera, audio | todo | no drivers; the Camera app does not open and its lock-screen shortcut does nothing |
@@ -87,5 +87,5 @@ patches 0086 (no IOKit busy hold, empty IOAcceleratorES) and 0087 (container-pat
 
 ## Open items
 
-Slow UI (software rendering; a vsync-period fix is built, patch 0101, not yet measured), poster-extension crashes and the transparent
+The first boot after a fresh flash shows Apple's data-migration progress bar for 14+ minutes (*observed*, 2026-10-22, run demo2; a measured breakdown is planned), slow UI (software rendering; a vsync-period fix is built, patch 0101, not yet measured), poster-extension crashes and the transparent
 clock, black screen after minutes, power-on boot without a PC (planned: iOS image in `boot_a`), then Wi-Fi and a GPU path. See [ROADMAP.md](../ROADMAP.md) and [Plan](PLAN.md).

@@ -17,14 +17,16 @@ up front because it changes how you should read this repository.
   explicit confirmation, and so does publishing; see [Safety](https://github.com/PixOS-Project/pixelios-kernel/blob/main/docs/SAFETY.md). Some work is done by agents
   while the maintainer is away, inside those limits.
 - **Independent review.** Code that touches hardware gets a separate read-only review by a second
-  agent session, written up in [Reviews](https://github.com/PixOS-Project/pixelios-kernel/blob/main/docs/reviews/hs-g4-review-1.md). Those reviews found real bugs
+  agent session, written up in [`docs/reviews/`](https://github.com/PixOS-Project/pixelios-kernel/tree/main/docs/reviews) (for example the
+  [HS-G4 review](https://github.com/PixOS-Project/pixelios-kernel/blob/main/docs/reviews/hs-g4-review-1.md)); code that writes hardware registers is reviewed by the largest available
+  Claude model, read-only changes by a smaller one. Those reviews found real bugs
   (write paths, DMA assumptions, unsound audit rules). The reviewers are also AI, so a review is
   a second opinion, not a proof.
 - **Hardware is the judge.** Nothing is called working until it was observed on a real Pixel 6a.
   [Status](STATUS.md) separates what was observed on the device from what only builds or is guessed.
 - **Automatic checks.** Host tests, a build-time audit that rejects any storage write path in
-  pre-kernel code (`tools/test-bluejay-boot.py`), and a check that the published repositories rebuild the
-  private working tree (scan for private data, reconstruction, no dangling links).
+  pre-kernel code (`tools/test-bluejay-boot.py`), mutation tests that must fail when a safety rule is removed, and one
+  quality gate (`tools/check-all.sh`, prints `GATE PASS <hash>`) that runs all of them before anything is pushed.
 - **Attribution.** Commits made by an agent end with a `Co-Authored-By:` trailer naming the model.
 
 ## What that means for you

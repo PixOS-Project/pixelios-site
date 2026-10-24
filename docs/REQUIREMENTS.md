@@ -4,5 +4,6 @@ Python 3.12 and `pip install "mkdocs<2" mkdocs-material`. `tools/build-site.py` 
 [pixelios-kernel](https://github.com/PixOS-Project/pixelios-kernel): check the two repositories out side by side and link `soc` and `device` into this
 checkout (the Pages workflow `.github/workflows/pages.yml` does exactly that).
 
-*Observed* (2026-10-22): `python3 tools/build-site.py` on the generated site tree plus the kernel tree's `soc/` and `device/` produced 16 pages (6 generated).
-*Not run*: the final `mkdocs build --strict` (mkdocs was not installed on the test machine) and the Pages deployment.
+*Observed* (2026-10-24): the Pages workflow builds with `mkdocs build --strict` and deploys to <https://pixos-project.github.io/pixelios-site/>
+(GitHub Actions run 40041837508, success). To check a change locally, run the same three commands as the workflow
+(`python3 tools/build-site.py`, then `mkdocs build --strict -f .site/mkdocs.yml`).

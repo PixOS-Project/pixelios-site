@@ -6,13 +6,12 @@ This page lists what comes next. Order and estimates are guesses, not promises.
 ## Milestones
 
 1. **iPhone GUI on the Pixel 6a: reached** (2026-10-22). Lock screen, home screen, Settings, touch.
-2. **Wi-Fi: not started on hardware.** Broadcom BCM4389 on PCIe; plan in [docs/research/20-wifi-stack-plan.md](https://github.com/PixOS-Project/pixelios-kernel/blob/main/docs/research/20-wifi-stack-plan.md).
+2. **Wi-Fi: in progress** (bring-up from the shim; the chip answers and its chip id was read, no firmware or driver yet). Broadcom BCM4389 on PCIe; plan in [docs/research/20-wifi-stack-plan.md](https://github.com/PixOS-Project/pixelios-kernel/blob/main/docs/research/20-wifi-stack-plan.md), progress in [Coverage](docs/COVERAGE.md).
 
 ## Now (demo and release)
 
 - Power-on boot without a PC: iOS image in `boot_a`, stock `boot_b` kept as the way back, slot switched with `fastboot --set-active`.
 - Pixel 6a identity in Settings -> About (name, model, serial text), plain lock-screen clock. Built, waiting for a hardware check.
-- Publish this repository.
 
 ## Next
 
@@ -24,9 +23,9 @@ This page lists what comes next. Order and estimates are guesses, not promises.
 
 ## Later
 
-- **Wi-Fi** (milestone 2): PCIe/PHY bring-up behind EL3/ACPM, firmware handling, an `apple80211` front end for iOS.
+- **Wi-Fi** (milestone 2): PCIe/PHY bring-up is done as far as reading the chip id; next are firmware and NVRAM download (the firmware stays on the user's own phone, never in git), a PCIe and Broadcom driver built into the kernel, and an `apple80211` front end for iOS.
 - **GPU**: the Mali-G78 runs jobs from the shim and from XNU (rail through ACPM, reset works); the userland stack (Mesa panfrost, EAGL shim) builds in CI and is being brought up on the phone. See [docs/COVERAGE.md](docs/COVERAGE.md).
-- Audio, Bluetooth, camera, sensors, modem. No work started.
+- Audio, Bluetooth, camera, sensors, modem. No drivers yet (the modem partition is never written). `bluetoothd` restarts in a loop on every boot (*observed*, research 35).
 - Other Tensor phones (Pixel 6, 6 Pro share the SoC tree): see [docs/PORTING.md](docs/PORTING.md).
 
 ## Where help is most useful

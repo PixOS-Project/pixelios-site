@@ -6,10 +6,12 @@ device with a chip shares), then **device** trees (what one phone adds).
 ```
 shim/                    shared bare-metal shim: start-up, MMU, FDT parser, loader, console, RAM log,
                          pstore, USB gadget protocol, userdata dump framing, host tests, build.sh
-xnu/patches/             numbered patches to Apple's XNU (fetched series + ours: 0080 gs101 UFS, 0081 QR log)
+xnu/patches/             numbered patches to Apple's XNU, applied in order on xnu-8796 (fetched series + ours, e.g. 0080 gs101 UFS,
+                         0095 touch, 0099 IONetworkStack stand-in)
 qrlog/                   QR frame builder + encoder shared by shim and kernel
-tools/                   ADT/payload builders, USB log + dump receivers, QR log reader, iOS root builder,
-                         `pix` (device entry point), `build-site.py` (this site)
+tools/                   ADT/payload builders, USB log + dump receivers, QR log reader, hardware test loop
+                         (`xrun`, `probe-run`, `phone`, `phone-lock`, `ci-kernel`, `stack-apply`), quality gate
+                         (`check-all.sh`), `pix` (device entry point)
 
 soc/<vendor>/<soc>/      soc.json (GIC, timer, UFS base, watchdogs, CPUs, PSCI, boot header)
                          shim/  SoC code the shim compiles (e.g. gs101 UFS cold init, HS-G4, PHY tables)
@@ -18,9 +20,13 @@ soc/<vendor>/<soc>/      soc.json (GIC, timer, UFS base, watchdogs, CPUs, PSCI, 
 device/<vendor>/<codename>/   board.json (names its SoC; DRAM map, framebuffer, ...)
                               docs/ hardware/   gate results, raw captures from that phone
 
-docs/                    plan, safety, status, research, reviews
-upstream-patches/        our diffs against ios-sweet, applied by tools/setup-upstream.sh
+docs/                    safety, build, automation, research notes, reviews, Wi-Fi coverage
+upstream-patches/        our diffs against ios-sweet, applied by tools/setup-upstream.sh (being retired, see Credits)
 ```
+
+The project is three repositories: [pixelios-kernel](https://github.com/PixOS-Project/pixelios-kernel) (everything above),
+[pixelios-userland](https://github.com/PixOS-Project/pixelios-userland) (the iOS root build: `tools/build-ios-root*.sh`, rootless guest scripts) and
+[pixelios-site](https://github.com/PixOS-Project/pixelios-site) (this site; `tools/build-site.py` assembles it).
 
 ## Reading order
 
@@ -38,4 +44,5 @@ tools/pix info bluejay            # merged SoC + device values
 tools/pix check bluejay           # sanity checks (alignment, required keys)
 tools/pix build bluejay --avb     # build the shim for a device
 tools/pix new-device google/oriole --soc google/gs101 --name "Pixel 6"
+tools/pix probe ARGS...           # one shim probe cycle: build, boot, capture, verdict
 ```
