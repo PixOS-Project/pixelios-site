@@ -26,12 +26,12 @@ milestone 2 is real Wi-Fi.
 | UFS cold re-init after ABL shutdown | works | `soc/google/gs101/docs/07-gs101-ufs-bringup.md`, `soc/google/gs101/docs/08-abl-ufs-shutdown.md` |
 | UFS power-mode change to HS-G4 | works: 4 MiB read 8036 ms -> 675 ms, data identical | `docs/reviews/hs-g4-review-1.md` |
 | Read-only `userdata` dump over USB (CRC-checked) | works | `device/google/bluejay/hardware/udump-1mib-2026-10-21.txt` |
-| UFS DMA into the XNU memory bank | works | S2MPU does not block it |
+| UFS DMA into the XNU memory bank | works (2026-10-21, same run as the root mount, xnu-0085) | S2MPU does not block it: the UFS driver's DMA reads and writes the root |
 | XNU UFS block driver, HFS+ root mount | works read-write (2026-10-21, xnu-0085, git 83d52de) | read-only boot fails at journal init (EROFS), `ufsrw=1 rootrw=1` mounts |
 | gs101 UFS write path inside XNU (journal, file clones in `userdata`) | works (same run) | the shim itself has no write path; the root is flashed with `fastboot flash userdata` |
 | Software reset back to the bootloader flow | partial: fired in earlier runs (2026-10-22, xnu-0089 and later), did NOT fire in the spi-clk2 run (xnu-b5623f6, 502 s wait; phone needed a Power+VolDown hold), cause unknown | `sweetrestart=<s>`; EL3 accepts the PMU SMC write from EL1 (research 10); the phone lands in recovery, `tools/to-fastboot.sh` returns it to fastboot |
 | SMP via PSCI | works, `cpus=8` boots (2026-10-22) | run usbnet4-cpus8 |
-| CPU clocks (ACPM DVFS, shim `--dvfs`) | works: cluster rates raised before the XNU jump (each cluster measured ~1.8 GHz), UI is faster but still laggy | runs dvfs1..dvfs4 |
+| CPU clocks (ACPM DVFS, shim `--dvfs`) | works (2026-10-22): cluster rates raised before the XNU jump (each cluster measured ~1.8 GHz), UI is faster but still laggy | runs `dvfs1`..`dvfs4` |
 
 ## iOS userland and display
 
