@@ -34,7 +34,7 @@ Feature list as of **2026-11-15**. Every row was observed on hardware in the run
 | Feature | What the run showed | Runs | Date |
 |---|---|---|---|
 | XNU + iOS boot to lock screen and home screen | 19/19 captured screens match their references (lock, home pages, Settings, App Library) | gputest-surffail-b | 2026-11-11 |
-| GPU-accelerated UI at the GPU's lowest clock (150 MHz) | 600 s navigation bench, 2 boots: rendered 50.6 / 50.6 fps pooled, slowest step 48.4 / 48.6; no reset, about 37 min uptime each; drawn presents reaching the panel 49.9 / 49.5 per second (bar 50: not met) | 155b, 8177 | 2026-11-15 |
+| GPU-accelerated UI at the GPU's lowest clock (150 MHz) | 600 s navigation bench, 2 boots: rendered 50.6 / 50.6 fps pooled, slowest step 48.4 / 48.6; no reset, about 37 min uptime each; all panel presents 49.9 / 49.5 per second (bar 50: not met) | 155b, 8177 | 2026-11-15 |
 | Frame pacing fix (one frame per vsync, hold capped at one tick) | all panel presents 51.2/s (49.5 to 49.9 without it); drawn presents 49.0/s, still under the 50/s bar | 18e1 | 2026-11-15 |
 | App Library blurred backdrop renders correctly | 0 SURFFAIL, 0 'FBO incomplete'; backdrop 0 % dark (was 61-62 %) | gputest-surffail-b (fixed) vs gputest-surffail-a (black) | 2026-11-11 |
 | GPU-accelerated UI at boost clocks (Mali, CoreAnimation through our GL/Mali path; older config, not comparable to the low-clock rows) | v2.1 nav bench pooled 59.5 fps, slowest step (settings-open) 51.6 fps, every step measured | gputest-surffail-b | 2026-11-11 |
@@ -54,7 +54,7 @@ Feature list as of **2026-11-15**. Every row was observed on hardware in the run
 | Bluetooth firmware load no longer spins a core for 41.5 s (patch 0360) | the 41.5 s kernel spinner is gone from the CPU top | d9a3 | 2026-11-15 |
 | Bluetooth scan (CoreBluetooth, in our test app; not yet observed on the Settings screen) | 21 / 28 nearby devices (52 / 54 advertisement reports) | bt-pr3, bt-hotpair | 2026-11-10, 2026-11-11 |
 | Bluetooth pairing with a PC; bond survives a reboot | PIN success, paired + bonded on both sides; after reboot iOS reports bonded=1 (the PC reconnected; iOS did not auto-reconnect) | bt-hotpair, bt-a2dp | 2026-11-11 |
-| MobileSafari launched on the demo boot (page load itself not logged) | MobileSafari exec x12 in the log; internet itself is shown by the pixnet checks | job 1308 (demo boot) | 2026-11-15 |
+| MobileSafari launched on the demo boot (page load itself not logged) | MobileSafari exec x6 in the log; internet itself is shown by the pixnet checks | job 1308 (demo boot) | 2026-11-15 |
 | Charging while running iOS (875 mA on USB 3) | battery current -40 mA -> +107..+205 mA, 0 charger bus errors | chg-p3 | 2026-11-10 |
 
 **Known issues** (observed):
@@ -88,7 +88,7 @@ Numbers as of **2026-11-15**, from the project's milestone ladder. "One run" mea
 | G-NAV55 | **done** | slowest step 56.6 and 56.7 frames/s, pooled 59.8; repeated from the trunk build at 55.2 and 55.1 | observed on hardware, 2026-11-09, runs `gputest-nav43`, `gputest-nav44`, `gputest-trunk10`, `gputest-trunk11` |
 | G-NAV60 | partial | pooled 59.5 frames/s; slowest step Settings open 51.6 (it ranged 51 to 56 across boots) | observed on hardware, 2026-11-11, run `gputest-surffail-b` |
 | G-LOW50 | **done** | rendered 50.6 and 50.6 pooled, slowest step 48.4 and 48.6 frames/s on two boots (bars met); 5 of 8 CPU cores, CPU A76 1663 / X1 1826 MHz static, GPU 150 MHz, memory 1352 MHz; 3.32 and 3.27 W, 33.4 to 39.8 C and 34.1 to 40.6 C | observed on hardware, 2026-11-15, runs `155b`, `8177` |
-| G-DRAWN50 | partial | 49.0 drawn presents/s with the pacing fix (one frame per vsync); 49.9 and 49.5 without it. The 50/s bar is NOT met yet | observed on hardware, 2026-11-15, runs `18e1`, `155b`, `8177` |
+| G-DRAWN50 | partial | 49.0 drawn presents/s with the pacing fix (one frame per vsync; about 47.5 before, estimated); all panel presents 49.9 and 49.5 without it, 51.2 with it. The 50/s bar is NOT met yet | observed on hardware, 2026-11-15, runs `18e1`, `155b`, `8177` |
 | G-RENDER | partial | App Library blurred backdrop fixed (0 incomplete framebuffers, was 61 to 62 percent black); still open: magnifier glyph in the search field, a transparent-black band under the status bar in Spotlight | observed on hardware, 2026-11-11, runs `gputest-surffail-b`, `gputest-surffail-a` |
 | **Wi-Fi** | | | |
 | W-SCAN | **done** | 8 access points (first scan, 2026-11-03); all-channel scan 13 of 13 complete in about 4 s each, 35 networks in the first scan | observed on hardware, 2026-11-11, runs `20261103T223800Z-wlan-runG2-clm24b`, `wd6-rec1` |

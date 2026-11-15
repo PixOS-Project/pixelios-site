@@ -106,7 +106,7 @@
    "stream": "GPU",
    "rung": "Drawn presents that reach the panel at least 50 per second (same low-clock bench)",
    "state": "partial",
-   "headline": "49.0 drawn presents/s with the pacing fix (one frame per vsync); 49.9 and 49.5 without it. The 50/s bar is NOT met yet",
+   "headline": "49.0 drawn presents/s with the pacing fix (one frame per vsync; about 47.5 before, estimated); all panel presents 49.9 and 49.5 without it, 51.2 with it. The 50/s bar is NOT met yet",
    "date": "2026-11-15",
    "run": "18e1; 155b; 8177",
    "note": "all panel presents 51.2/s with the fix; about 1.8/s of swaps are still lost when a third swap lands inside the hold",
@@ -377,7 +377,7 @@
    "feature": "GPU-accelerated UI at the GPU's lowest clock (150 MHz)",
    "run": "155b, 8177",
    "date": "2026-11-15",
-   "shows": "600 s navigation bench, 2 boots: rendered 50.6 / 50.6 fps pooled, slowest step 48.4 / 48.6; no reset, about 37 min uptime each; drawn presents reaching the panel 49.9 / 49.5 per second (bar 50: not met)"
+   "shows": "600 s navigation bench, 2 boots: rendered 50.6 / 50.6 fps pooled, slowest step 48.4 / 48.6; no reset, about 37 min uptime each; all panel presents 49.9 / 49.5 per second (bar 50: not met)"
   },
   {
    "feature": "Frame pacing fix (one frame per vsync, hold capped at one tick)",
@@ -497,7 +497,7 @@
    "feature": "MobileSafari launched on the demo boot (page load itself not logged)",
    "run": "job 1308 (demo boot)",
    "date": "2026-11-15",
-   "shows": "MobileSafari exec x12 in the log; internet itself is shown by the pixnet checks"
+   "shows": "MobileSafari exec x6 in the log; internet itself is shown by the pixnet checks"
   },
   {
    "feature": "Charging while running iOS (875 mA on USB 3)",
