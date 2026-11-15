@@ -1,5 +1,7 @@
 # Repository map
 
+**Last verified: 2026-11-15** (against the kernel and userland trees).
+
 The tree follows AOSP's idea: shared platform code in one place, then **SoC** trees (what every
 device with a chip shares), then **device** trees (what one phone adds).
 
@@ -20,18 +22,17 @@ soc/<vendor>/<soc>/      soc.json (GIC, timer, UFS base, watchdogs, CPUs, PSCI, 
 device/<vendor>/<codename>/   board.json (names its SoC; DRAM map, framebuffer, ...)
                               docs/ hardware/   gate results, raw captures from that phone
 
-docs/                    safety, build, automation, research notes, reviews, Wi-Fi coverage
-upstream-patches/        our diffs against ios-sweet, applied by tools/setup-upstream.sh (being retired, see Credits)
+docs/                    safety, build, automation, the HackiOS guide, research notes, reviews
 ```
 
 The project is three repositories: [pixelios-kernel](https://github.com/PixOS-Project/pixelios-kernel) (everything above),
-[pixelios-userland](https://github.com/PixOS-Project/pixelios-userland) (the iOS root build: `tools/build-ios-root*.sh`, rootless guest scripts) and
+[pixelios-userland](https://github.com/PixOS-Project/pixelios-userland) (the iOS root build, the Mesa patch series, the EAGL/GL layer design and our iOS-side helpers) and
 [pixelios-site](https://github.com/PixOS-Project/pixelios-site) (this site; `tools/build-site.py` assembles it).
 
 ## Reading order
 
 1. [AI-driven development](AI_DEVELOPMENT.md): how the project is made, and how to read it.
-2. [Status](STATUS.md) and [Plan](PLAN.md): where the project is and why it is shaped this way.
+2. [Status](STATUS.md), [Method](METHOD.md) and the [Porting blueprint](BLUEPRINT.md): where the project is, how we work, and the stages in order.
 3. [Safety](https://github.com/PixOS-Project/pixelios-kernel/blob/main/docs/SAFETY.md): the rules every change follows.
 4. [Boot path](https://github.com/PixOS-Project/pixelios-kernel/blob/main/docs/research/01-boot-path.md): how a Pixel reaches our code.
 5. The device you care about under [Devices](devices/index.md), and its SoC under [SoCs](socs/index.md).

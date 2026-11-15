@@ -206,8 +206,10 @@ def entry(site):
     return "      - \"%s\": %s" % (title(site), site)
 
 
-nav = ["nav:", "  - Home: index.md", "  - Guide:"]
-nav += [entry(p) for p in ("STATUS.md", "BUILD.md", "QR_LOG.md", "AUTOMATION.md", "ROOTLESS_BUILD.md", "PORTING.md", "MAP.md", "SAFETY.md", "AI_DEVELOPMENT.md", "CONTRIBUTING.md")
+nav = ["nav:", "  - Home: index.md"]
+nav += ["  - Project:"] + [entry(p) for p in ("STATUS.md", "RELEASE-2026-11-15.md", "MILESTONES.md", "CONTRIBUTING.md", "AI_DEVELOPMENT.md") if os.path.exists(os.path.join(SRC, p))]
+nav += ["  - For any HackiOS port:"] + [entry(p) for p in ("BLUEPRINT.md", "IOS-INTERFACES.md", "METHOD.md", "PROMPTS.md", "LESSONS.md") if os.path.exists(os.path.join(SRC, p))]
+nav += ["  - Guide:"] + [entry(p) for p in ("BUILD.md", "QR_LOG.md", "AUTOMATION.md", "ROOTLESS_BUILD.md", "PORTING.md", "MAP.md", "SAFETY.md")
         if os.path.exists(os.path.join(SRC, p))]
 nav += ["  - Design:"] + [entry(p) for p in ("PLAN.md", "CASE_STUDY.md") if os.path.exists(os.path.join(SRC, p))]
 nav += ["  - Devices:", "      - Overview: devices/index.md"]
@@ -228,8 +230,8 @@ _l = [entry(p) for p in sorted(x for x in pages.values() if x.startswith("review
 nav += (["  - Reviews:"] + _l) if _l else []   # mkdocs rejects an empty section
 nav += ["  - Credits: CREDITS.md"]
 
-cfg = """site_name: PixeliOS
-site_description: Apple's XNU and iOS 16 on the Google Pixel 6a (Tensor G1), with device trees for other Pixels
+cfg = """site_name: PixOS
+site_description: Apple's XNU and iOS 16.7 on the Google Pixel 6a (Tensor G1), with a porting blueprint, method and LLM prompts for any HackiOS project
 site_url: https://pixos-project.github.io/pixelios-site/
 repo_url: https://github.com/PixOS-Project/pixelios-site
 repo_name: PixOS-Project/pixelios-site

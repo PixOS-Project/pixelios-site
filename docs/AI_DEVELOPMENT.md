@@ -1,7 +1,9 @@
 # AI-driven development
 
-**PixeliOS is developed mostly by AI coding agents, directed by a human maintainer.** We say so
+**PixOS is developed mostly by AI coding agents, directed by a human maintainer.** We say so
 up front because it changes how you should read this repository.
+
+**Last verified: 2026-11-15.**
 
 ## How the project is built
 
@@ -27,6 +29,7 @@ up front because it changes how you should read this repository.
 - **Automatic checks.** Host tests, a build-time audit that rejects any storage write path in
   pre-kernel code (`tools/test-bluejay-boot.py`), mutation tests that must fail when a safety rule is removed, and one
   quality gate (`tools/check-all.sh`, prints `GATE PASS <hash>`) that runs all of them before anything is pushed.
+- **Little process.** The maintainer sets one goal per work stream with a "what counts" line; agents log one line per boot and report in a few plain lines. Tickets, queues, plan checks and review rounds were tried and retired on 2026-11-08/09 because they slowed the work ([Lessons](LESSONS.md)).
 - **Attribution.** Commits made by an agent end with a `Co-Authored-By:` trailer naming the model.
 
 ## What that means for you
@@ -49,3 +52,5 @@ same for everyone:
 3. Do not paste secrets, device serials, partition dumps or Apple firmware into prompts or commits.
 4. Code that writes to storage or hardware registers needs a human reading it line by line
    and, ideally, an independent review ([CONTRIBUTING](../CONTRIBUTING.md)).
+
+Want an agent to do a port of your own, or to continue this one? Use the [LLM prompts](PROMPTS.md): copy-paste blocks that carry these rules and our [method](METHOD.md), for any LLM harness. What went wrong when agents worked here, and the rules it led to, is on [Lessons](LESSONS.md).

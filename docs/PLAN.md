@@ -1,18 +1,23 @@
 # Plan
 
-Each phase ends with a hardware gate. All work follows [SAFETY.md](https://github.com/PixOS-Project/pixelios-kernel/blob/main/docs/SAFETY.md): every step must be reversible with the stock factory image, and the only partition ever written is `userdata`. No phase starts until the previous gate passes.
+Each phase ended with a hardware gate. All work follows [SAFETY.md](https://github.com/PixOS-Project/pixelios-kernel/blob/main/docs/SAFETY.md): every step must be reversible with the stock factory image, and the only partition ever written is `userdata`. No phase starts until the previous gate passes.
 Steps marked **[user]** are run by the maintainer (destructive, or needs the phone in hand). Status tags: *observed on hardware*, *read from source*, *guess*.
 Local toolchain setup: [BUILD.md](https://github.com/PixOS-Project/pixelios-kernel/blob/main/docs/BUILD.md). What works today: [Status](STATUS.md).
 
-| Phase | Gate | State (2026-10-24) |
+**Last verified: 2026-11-15.** This is the original phase plan (2026-10-20) with each phase's outcome. For a device-agnostic version
+of these stages, see the [Porting blueprint](BLUEPRINT.md); for the live numbers, [Milestones](MILESTONES.md).
+
+| Phase | Gate | State (2026-11-11) |
 |---|---|---|
 | 0 Probe shim, no XNU | shim runs and reports the hardware | **passed**, *observed* 2026-10-21 |
 | 1 XNU to the framebuffer console | XNU reaches "waiting for root device" | **passed**, *observed* 2026-10-21 |
 | 2 Root from UFS | launchd runs from the `userdata` root | **passed**, *observed* 2026-10-21 |
 | 3 SpringBoard | lock screen on the Pixel | **passed**, *observed* 2026-10-22 |
-| 4 Input and USB | unlock, navigate, network over USB | touch and USB network **passed**, buttons partial, *observed* 2026-10-22 |
-| 5 Wi-Fi | Settings shows Wi-Fi and the phone gets a connection | in progress: chip id read through PCIe, no firmware yet |
-| 6 Graphics | UI composited by the GPU | in progress: GPU executes jobs, no renderer yet |
+| 4 Input and USB | unlock, navigate, network over USB | touch and USB network **passed** (2026-10-22); buttons partial (no key press tested) |
+| 5 Wi-Fi | Settings shows Wi-Fi and the phone gets a connection | **passed**, *observed* 2026-11-08/09: joined from Settings with a DHCP lease, runs `wlan-wui-f2`, `wlan-wui-g`; throughput and reconnect since |
+| 6 Graphics | UI composited by the GPU | **passed**, *observed* 2026-11-09: the GPU draws the UI, slowest navigation step 56.6 frames/s, runs `gputest-nav43`, `gputest-nav44`; 60 on every step is open |
+| 7 Bluetooth (added later) | iOS Bluetooth works on the stock daemon | **passed**, *observed* 2026-11-10/11: scan, connect, advertise, pair, runs `bt-pr3`, `bt-pr4`, `bt-hotpair` |
+| 8 Audio, power (added later) | sound out, battery charges | charging one run (`chg-p3`, 2026-11-10); audio open |
 
 ## Phase 0: probe shim (no XNU)
 
@@ -45,13 +50,13 @@ Local toolchain setup: [BUILD.md](https://github.com/PixOS-Project/pixelios-kern
 ## Phase 5: Wi-Fi
 
 - **Decision (maintainer, 2026-10-21): the real radio, no USB-Ethernet substitute.** USB Ethernet stays a debug channel.
-- Chip: BCM4389 on PCIe `pcie_1`. Steps: (1) PCIe root complex and PHY bring-up from the shim (done up to the first BAR0 read), (2) firmware and NVRAM download from the shim, (3) a PCIe and Broadcom msgbuf driver built into the kernel, (4) an IO80211-compatible `en0` layer that `wifid` accepts (needs `wifid` disassembly), (5) firmware and NVRAM from the user's own phone image.
-- **Gate 5**: iOS Settings shows Wi-Fi and the phone gets a connection. Per-step evidence: [Coverage](COVERAGE.md).
+- Chip: BCM4389 on PCIe `pcie_1`. Steps as planned and done (*observed*): (1) PCIe root complex and PHY bring-up from the shim (chip id read through BAR0, 2026-10-24), (2) firmware and NVRAM download, (3) a PCIe and Broadcom msgbuf driver built into the kernel (chip definitions modelled on OpenBSD's bwfm; the WPA2 4-way handshake runs in our host driver), (4) an Apple80211-facing `en0` layer that `wifid` and Settings accept, (5) firmware and NVRAM from the user's own phone image, never in git.
+- **Gate 5**: iOS Settings shows Wi-Fi and the phone gets a connection. Per-step evidence: [Milestones](MILESTONES.md).
 
 ## Phase 6: graphics
 
 - Baseline: CPU-rendered framebuffer through stand-ins for IOMobileFramebuffer and IOSurface.
-- Apple's GPU userland targets AGX and the Pixel 6a has an Arm Mali-G78, so an accelerated path needs a Metal/IOAccelerator-style layer over Mali (large). Planned: kernel side in `docs/research/17-gpu-kernel-gs101.md`, userland as Mesa Panfrost behind an EAGL shim (GLES, not Metal) in `docs/research/18-gpu-userland.md`.
+- Apple's GPU userland targets AGX and the Pixel 6a has an Arm Mali-G78, so Metal is out of reach. What we built instead (*observed*): a Mali kernel driver in XNU (power, MMU, job submission, interrupts) with an IOKit user client, Mesa's Panfrost driver built for iOS, and an EAGL layer so CoreAnimation takes its GLES path. The kernel-side plan is `docs/research/17-gpu-kernel-gs101.md` in pixelios-kernel.
 
 ## Track B (not started): newer iOS
 

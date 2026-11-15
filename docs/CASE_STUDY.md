@@ -1,5 +1,7 @@
 # Case study: porting ios-sweet to the Pixel 6a (bluejay)
 
+**Last verified: 2026-11-15** (sections 1-4 are the 2026-10-20 plan, kept as written; section 5 is today's outcome).
+
 Sources: `docs/research/01..05` in `pixelios-kernel` (05 = primary-source fact-check), written as desk research on 2026-10-20,
 before any Pixel 6a boot. The tables below are that plan. Where a later hardware result settled an item it says so; items
 still marked *(verify)* were not checked on the phone. Current results: [Status](STATUS.md).
@@ -66,7 +68,12 @@ drivers alongside.
 
 ## 5. Outcome
 
-The plan held: the Pixel 6a boots XNU to SpringBoard on 8 cores with touch (*observed*, 2026-10-22). The main
+The plan held: the Pixel 6a booted XNU to SpringBoard on 8 cores with touch (*observed*, 2026-10-22). The main
 surprises were not in the plan's risk list: touch needed its two regulator rails switched on through the ACPM mailbox before the
 chip answered, and the iOS userland needed a root recipe tweak plus kernel patches 0086, 0087 and 0099 to get past the Apple-logo stall
-and the Settings -> About hang (details in [Status](STATUS.md)).
+and the Settings -> About hang.
+
+What came after the plan (*observed*, run labels on [Status](STATUS.md)): the GPU path (a Mali driver in XNU, Mesa Panfrost behind an EAGL
+layer) reached a slowest navigation step of 56.6 frames/s on 2026-11-09; Wi-Fi joined from Settings on 2026-11-08/09 and moves more than
+100 Mbit/s; Bluetooth runs on Apple's stock daemon since 2026-11-10; the battery charges since 2026-11-10 (one run). The detailed list of
+what went wrong on the way is on [Lessons](LESSONS.md); the reusable stages are on the [Porting blueprint](BLUEPRINT.md).

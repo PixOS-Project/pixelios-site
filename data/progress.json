@@ -1,0 +1,521 @@
+{
+ "as_of": "2026-11-15",
+ "milestones_newest": "2026-11-15",
+ "rows": [
+  {
+   "id": "B-GUI",
+   "stream": "Boot and UI",
+   "rung": "XNU boots from userdata to the iOS lock screen and home screen",
+   "state": "done",
+   "headline": "lock and home screen on the panel (2026-10-22); today 19 of 19 captured screens match their references (lock, home pages, Settings, App Library)",
+   "date": "2026-11-11",
+   "run": "about4; gputest-surffail-b",
+   "tag": "observed on hardware",
+   "note": "first reached 2026-10-22; 8 CPU cores"
+  },
+  {
+   "id": "B-TOUCH",
+   "stream": "Boot and UI",
+   "rung": "Touch input reaches SpringBoard (FTM5 touch controller over SPI)",
+   "state": "done",
+   "headline": "85 touch-controller event lines with the GPU path up (2026-11-04); on 2026-11-15 a real finger on the demo boot: 5791 touch interrupts, 0 empty, 0 storm, interrupt mode",
+   "date": "2026-11-15",
+   "run": "demo-gpu-touch-wifi; job 1308 (demo boot)",
+   "tag": "observed on hardware",
+   "note": "first seen 2026-10-22; the 2026-11-15 row was driven by hand by the maintainer, unlock and app open done on their own recording"
+  },
+  {
+   "id": "G-F20",
+   "stream": "GPU",
+   "rung": "Median distinct frames/s over the 240-swipe bench (target 20, stretch 30)",
+   "state": "done",
+   "headline": "38 (2026-11-04); the same bench from kernel trunk read 37 (2026-11-07)",
+   "date": "2026-11-07",
+   "run": "gputest-cced-poll20; gputest-t2b87-trunk",
+   "tag": "observed on hardware",
+   "note": "historical swipe bench, replaced by the navigation bench (G-NAV55)"
+  },
+  {
+   "id": "G-F40",
+   "stream": "GPU",
+   "rung": "Same, one swipe every 4 s (target 40, stretch 48)",
+   "state": "met-one-run",
+   "headline": "41",
+   "date": "2026-11-07",
+   "run": "gputest-c21e-unmap",
+   "tag": "observed on hardware",
+   "note": "historical swipe bench, not repeated: replaced by the navigation bench"
+  },
+  {
+   "id": "G-F55",
+   "stream": "GPU",
+   "rung": "Same, continuous swipe bench, panel presents/s (target 55)",
+   "state": "superseded",
+   "headline": "sliding 10 s peak 52.9; this bench cannot reach 55 by construction (idle gaps between swipes)",
+   "date": "2026-11-07",
+   "run": "gputest-splitlag",
+   "tag": "observed on hardware",
+   "note": "replaced by G-NAV55 (scripted navigation, frame-time witness)"
+  },
+  {
+   "id": "G-10b-nav",
+   "stream": "GPU",
+   "rung": "Navigation score of the first navigation scorer (per-action busy fps p50, scripted session)",
+   "state": "superseded",
+   "headline": "p50_min 18.0 on the first scored session",
+   "date": "2026-11-07",
+   "run": "gputest-nav2",
+   "tag": "observed on hardware",
+   "note": "replaced by the frame-time witness of G-NAV55"
+  },
+  {
+   "id": "G-NAV55",
+   "stream": "GPU",
+   "rung": "Slowest navigation step at or above 55 frames/s (frame-time bench v2.1: unlock, home pages, Settings, Spotlight, app launch; 2 boots)",
+   "state": "done",
+   "headline": "slowest step 56.6 and 56.7 frames/s, pooled 59.8; repeated from the trunk build at 55.2 and 55.1",
+   "date": "2026-11-09",
+   "run": "gputest-nav43; gputest-nav44; gputest-trunk10; gputest-trunk11",
+   "tag": "observed on hardware",
+   "note": "the last limiter was per-job completion polling; GPU interrupts lifted it"
+  },
+  {
+   "id": "G-NAV60",
+   "stream": "GPU",
+   "rung": "Every navigation step at 60 frames/s (the project goal)",
+   "state": "partial",
+   "headline": "pooled 59.5 frames/s; slowest step Settings open 51.6 (it ranged 51 to 56 across boots)",
+   "date": "2026-11-11",
+   "run": "gputest-surffail-b",
+   "tag": "observed on hardware",
+   "note": "pooled is near 60; the slowest step is not. Boost-clock config; the low-clock rows are G-LOW50 below"
+  },
+  {
+   "id": "G-LOW50",
+   "stream": "GPU",
+   "rung": "Low-clock bench: rendered frames at the GPU's lowest clock (150 MHz), bars 50 pooled / 45 slowest step; 600 s bench with full Wi-Fi load, 2 boots",
+   "state": "done",
+   "headline": "rendered 50.6 and 50.6 pooled, slowest step 48.4 and 48.6 frames/s on two boots (bars met); 5 of 8 CPU cores, CPU A76 1663 / X1 1826 MHz static, GPU 150 MHz, memory 1352 MHz; 3.32 and 3.27 W, 33.4 to 39.8 C and 34.1 to 40.6 C",
+   "date": "2026-11-15",
+   "run": "155b; 8177",
+   "note": "more CPU does not help: A76 1836 gave rendered 50.5 (run fede)",
+   "tag": "observed on hardware"
+  },
+  {
+   "id": "G-DRAWN50",
+   "stream": "GPU",
+   "rung": "Drawn presents that reach the panel at least 50 per second (same low-clock bench)",
+   "state": "partial",
+   "headline": "49.0 drawn presents/s with the pacing fix (one frame per vsync); 49.9 and 49.5 without it. The 50/s bar is NOT met yet",
+   "date": "2026-11-15",
+   "run": "18e1; 155b; 8177",
+   "note": "all panel presents 51.2/s with the fix; about 1.8/s of swaps are still lost when a third swap lands inside the hold",
+   "tag": "observed on hardware"
+  },
+  {
+   "id": "G-RENDER",
+   "stream": "GPU",
+   "rung": "The UI renders like iOS (captured frames match references, no black or missing layers)",
+   "state": "partial",
+   "headline": "App Library blurred backdrop fixed (0 incomplete framebuffers, was 61 to 62 percent black); still open: magnifier glyph in the search field, a transparent-black band under the status bar in Spotlight",
+   "date": "2026-11-11",
+   "run": "gputest-surffail-b; gputest-surffail-a",
+   "tag": "observed on hardware",
+   "note": "surffail-a is the before (black), surffail-b the fix"
+  },
+  {
+   "id": "W-SCAN",
+   "stream": "Wi-Fi",
+   "rung": "Scan lists access points",
+   "state": "done",
+   "headline": "8 access points (first scan, 2026-11-03); all-channel scan 13 of 13 complete in about 4 s each, 35 networks in the first scan",
+   "date": "2026-11-11",
+   "run": "20261103T223800Z-wlan-runG2-clm24b; wd6-rec1",
+   "tag": "observed on hardware",
+   "note": ""
+  },
+  {
+   "id": "W-JOIN",
+   "stream": "Wi-Fi",
+   "rung": "WPA2-PSK join: 4-way handshake done, keys installed",
+   "state": "done",
+   "headline": "M1 to M4 complete, pairwise and group keys set",
+   "date": "2026-11-08",
+   "run": "wlan-runG2-join25g",
+   "tag": "observed on hardware",
+   "note": ""
+  },
+  {
+   "id": "W-PING",
+   "stream": "Wi-Fi",
+   "rung": "ICMP echo to the gateway from the kernel driver (10 of 10)",
+   "state": "done",
+   "headline": "10 of 10 echoes",
+   "date": "2026-11-08",
+   "run": "wlan-runG2-join26d",
+   "tag": "observed on hardware",
+   "note": ""
+  },
+  {
+   "id": "W-IOSPING",
+   "stream": "Wi-Fi",
+   "rung": "ping from iOS userland over en0",
+   "state": "done",
+   "headline": "10 of 10 echoes",
+   "date": "2026-11-08",
+   "run": "wlan-iosping-c",
+   "tag": "observed on hardware",
+   "note": ""
+  },
+  {
+   "id": "W-UI",
+   "stream": "Wi-Fi",
+   "rung": "Network listed and joined in Settings > Wi-Fi",
+   "state": "done",
+   "headline": "Settings shows the test network joined with a checkmark; en0 is the primary interface with a DHCP lease",
+   "date": "2026-11-09",
+   "run": "wlan-wui-f2; wlan-wui-g",
+   "tag": "observed on hardware",
+   "note": "two boots; the joined row still shows a Weak Security label"
+  },
+  {
+   "id": "W-LIST",
+   "stream": "Wi-Fi",
+   "rung": "Settings > Wi-Fi lists nearby networks from a live scan",
+   "state": "done",
+   "headline": "list of about 20 rows with lock and signal icons",
+   "date": "2026-11-11",
+   "run": "wd6-scan2; wd6-scan3; wd6-rec1",
+   "tag": "observed on hardware",
+   "note": ""
+  },
+  {
+   "id": "W-PERF",
+   "stream": "Wi-Fi",
+   "rung": "Throughput: every 1 s interval at least 100 Mbit/s down and 50 up for 30 s",
+   "state": "done",
+   "headline": "down 112.4 and 110.2 Mbit/s, up 67.8 and 68.1, ping p50 under load 3 to 7.5 ms",
+   "date": "2026-11-09",
+   "run": "wlan-perf-f2; wlan-perf-f3",
+   "tag": "observed on hardware",
+   "note": ""
+  },
+  {
+   "id": "W-NET",
+   "stream": "Wi-Fi",
+   "rung": "Real internet from iOS: address, route, DNS and HTTPS checks pass (pixnet), under the full bench load",
+   "state": "done",
+   "headline": "pixnet 9 of 9 checks on both bar boots, 0 link-down events; TCP download 285.4 and 188.1 Mbit/s average, upload 97.1 and 97.0 Mbit/s (host journal); UDP download lost 27.3 % and 39.5 % under the full bench load",
+   "date": "2026-11-15",
+   "run": "155b; 8177",
+   "note": "Rx buffer pool fix: no access-point deauth in two load boots (0357 boots, 173 to 230 Mbit/s full tests)",
+   "tag": "observed on hardware"
+  },
+  {
+   "id": "W-REL",
+   "stream": "Wi-Fi",
+   "rung": "Reliability: 3 cold boots with Wi-Fi up, reconnect after the access point drops the phone",
+   "state": "done",
+   "headline": "3 of 3 cold boots up; 4 of 4 outages over 2 boots: link down about 8 s after the ban, back up about 70 s later, ping 10 of 10",
+   "date": "2026-11-11",
+   "run": "wd6-cold1; wd6-cold2; wd6-cold3; wd6-apblock; wd6-apblock-r",
+   "tag": "observed on hardware",
+   "note": ""
+  },
+  {
+   "id": "W-HCI",
+   "stream": "Bluetooth",
+   "rung": "Controller answers HCI Reset over the UART",
+   "state": "done",
+   "headline": "Command Complete read back (7 bytes)",
+   "date": "2026-11-03",
+   "run": "bt-s4h",
+   "tag": "observed on hardware",
+   "note": "cause was the UART pads still set as GPIO"
+  },
+  {
+   "id": "W-KC",
+   "stream": "Bluetooth",
+   "rung": "iOS keychain writes succeed",
+   "state": "done",
+   "headline": "0 unsupported key-store calls",
+   "date": "2026-11-03",
+   "run": "kc-s1",
+   "tag": "observed on hardware",
+   "note": ""
+  },
+  {
+   "id": "W-BTD",
+   "stream": "Bluetooth",
+   "rung": "bluetoothd stays alive (60 s, 0 respawns)",
+   "state": "done",
+   "headline": "alive at least 170 s, 0 respawns",
+   "date": "2026-11-03",
+   "run": "bt-s4k",
+   "tag": "observed on hardware",
+   "note": "first done with a stopgap; superseded by W-BTUP on the stock daemon"
+  },
+  {
+   "id": "W-BTUP",
+   "stream": "Bluetooth",
+   "rung": "Stock bluetoothd, no binary patch, no defaults write: controller up, 0 daemon exits (2 boots)",
+   "state": "done",
+   "headline": "stack powered in 53 to 75 ms, 0 daemon exits",
+   "date": "2026-11-10",
+   "run": "bt-pr2; bt-pr3",
+   "tag": "observed on hardware",
+   "note": "our kernel driver answers the vendor commands this iOS profile sends"
+  },
+  {
+   "id": "W-BTSCAN",
+   "stream": "Bluetooth",
+   "rung": "A scan lists nearby devices",
+   "state": "done",
+   "headline": "CoreBluetooth discovered 52 and 64 devices",
+   "date": "2026-11-10",
+   "run": "bt-pr3; bt-pr4",
+   "tag": "observed on hardware",
+   "note": ""
+  },
+  {
+   "id": "W-BTCONN",
+   "stream": "Bluetooth",
+   "rung": "iOS LE-connects to a scanned device",
+   "state": "done",
+   "headline": "connect PASS, 1 GATT service read (2 boots), and again on the stock daemon",
+   "date": "2026-11-10",
+   "run": "bt-conn1; bt-conn2; bt-pr3; bt-pr4",
+   "tag": "observed on hardware",
+   "note": ""
+  },
+  {
+   "id": "W-BTADV",
+   "stream": "Bluetooth",
+   "rung": "LE advertising",
+   "state": "done-one-run",
+   "headline": "advertising set up, chip status 00, 90 s",
+   "date": "2026-11-10",
+   "run": "bt-pr4",
+   "tag": "observed on hardware",
+   "note": "one run"
+  },
+  {
+   "id": "W-BTPAIR",
+   "stream": "Bluetooth",
+   "rung": "Pairing with a peer; the bond survives a reboot",
+   "state": "done",
+   "headline": "PIN success, paired and bonded on both sides; after a reboot iOS reports bonded=1; a headset paired too (2026-11-11); on 2026-11-15 a headset was paired by hand in Settings: Simple Pairing Complete status 0, Link Key Notification, 3 connections complete",
+   "date": "2026-11-15",
+   "run": "bt-hotpair; bt-a2dp; bt-va3; job 1308 (demo boot)",
+   "tag": "observed on hardware",
+   "note": ""
+  },
+  {
+   "id": "W-BTDEF",
+   "stream": "Bluetooth",
+   "rung": "Bluetooth up by default, no boot arguments, without delaying launchd",
+   "state": "done-one-run",
+   "headline": "launchd starts 0.8 s after the firmware load begins (was about 42 s); stack powered, LE connect PASS",
+   "date": "2026-11-11",
+   "run": "bt-def1",
+   "tag": "observed on hardware",
+   "note": "one run"
+  },
+  {
+   "id": "A-A2DP",
+   "stream": "Audio",
+   "rung": "Audio plays to a Bluetooth headset (A2DP)",
+   "state": "partial",
+   "headline": "the headset pairs and iOS opens an A2DP stream (SBC 44.1 kHz) but never starts it: no audio route",
+   "date": "2026-11-11",
+   "run": "bt-va3",
+   "tag": "observed on hardware",
+   "note": "cause not found yet"
+  },
+  {
+   "id": "A-SPK",
+   "stream": "Audio",
+   "rung": "Audio from the phone's own speaker",
+   "state": "open",
+   "headline": "none yet: no speaker or codec driver",
+   "date": "",
+   "run": "",
+   "tag": "",
+   "note": "the iOS audio stack itself runs: a 60 s test tone plays to a virtual device (bt-va1)"
+  },
+  {
+   "id": "P-CHG",
+   "stream": "Power",
+   "rung": "The battery charges while iOS runs",
+   "state": "done-one-run",
+   "headline": "battery current -40 mA before, +107 to +205 mA after raising the input limit to 875 mA on USB 3",
+   "date": "2026-11-10",
+   "run": "chg-p3",
+   "tag": "observed on hardware",
+   "note": "the bootloader leaves a 500 mA limit; one run, load under GPU boots not measured"
+  },
+  {
+   "id": "P-RECOVER",
+   "stream": "Tooling",
+   "rung": "A kernel panic returns the phone to fastboot with no hand on it",
+   "state": "done",
+   "headline": "panic self-recover PASS (2026-11-07); a hardware watchdog also returns a hung phone (2026-11-09)",
+   "date": "2026-11-09",
+   "run": "20261107T145123Z-panic-self-recover; ar-c-wdttest",
+   "tag": "observed on hardware",
+   "note": ""
+  }
+ ],
+ "features": [
+  {
+   "feature": "XNU + iOS boot to lock screen and home screen",
+   "run": "gputest-surffail-b",
+   "date": "2026-11-11",
+   "shows": "19/19 captured screens match their references (lock, home pages, Settings, App Library)"
+  },
+  {
+   "feature": "GPU-accelerated UI at the GPU's lowest clock (150 MHz)",
+   "run": "155b, 8177",
+   "date": "2026-11-15",
+   "shows": "600 s navigation bench, 2 boots: rendered 50.6 / 50.6 fps pooled, slowest step 48.4 / 48.6; no reset, about 37 min uptime each; drawn presents reaching the panel 49.9 / 49.5 per second (bar 50: not met)"
+  },
+  {
+   "feature": "Frame pacing fix (one frame per vsync, hold capped at one tick)",
+   "run": "18e1",
+   "date": "2026-11-15",
+   "shows": "all panel presents 51.2/s (49.5 to 49.9 without it); drawn presents 49.0/s, still under the 50/s bar"
+  },
+  {
+   "feature": "App Library blurred backdrop renders correctly",
+   "run": "gputest-surffail-b (fixed) vs gputest-surffail-a (black)",
+   "date": "2026-11-11",
+   "shows": "0 SURFFAIL, 0 'FBO incomplete'; backdrop 0 % dark (was 61-62 %)"
+  },
+  {
+   "feature": "GPU-accelerated UI at boost clocks (Mali, CoreAnimation through our GL/Mali path; older config, not comparable to the low-clock rows)",
+   "run": "gputest-surffail-b",
+   "date": "2026-11-11",
+   "shows": "v2.1 nav bench pooled 59.5 fps, slowest step (settings-open) 51.6 fps, every step measured"
+  },
+  {
+   "feature": "Touch with a real finger (FTM5, interrupt path)",
+   "run": "job 1308 (demo boot)",
+   "date": "2026-11-15",
+   "shows": "5791 touch interrupts, 0 empty, 0 storm, event rows with raw coordinates; unlock and app open were done by the maintainer by hand on their own recording"
+  },
+  {
+   "feature": "Touch controller up under the GPU path",
+   "run": "demo-gpu-touch-wifi",
+   "date": "2026-11-04",
+   "shows": "FTM5 identify 36 48, 85 touch events"
+  },
+  {
+   "feature": "Wi-Fi all-channel scan; networks listed in Settings > Wi-Fi",
+   "run": "wd6-rec1",
+   "date": "2026-11-11",
+   "shows": "13/13 scans done in ~4.0 s each; 35 access points, ~20 networks shown in Settings"
+  },
+  {
+   "feature": "Wi-Fi WPA2-PSK join + DHCP lease; Settings shows the joined network",
+   "run": "wlan-wui-f2",
+   "date": "2026-11-08",
+   "shows": "link up, en0 is the primary interface with a DHCP lease"
+  },
+  {
+   "feature": "Real internet over Wi-Fi under full bench load (address, route, DNS, HTTPS)",
+   "run": "155b, 8177",
+   "date": "2026-11-15",
+   "shows": "pixnet 9/9 on both boots, link down 0; TCP down 285.4 / 188.1 Mbit/s, up 97.1 / 97.0 (host journal)"
+  },
+  {
+   "feature": "Wi-Fi Rx buffer pool: no access-point deauth under load",
+   "run": "0357 boots",
+   "date": "2026-11-15",
+   "shows": "TCP down 173 to 230 Mbit/s in full tests, no deauth in 2 load boots"
+  },
+  {
+   "feature": "Wi-Fi reconnects after the access point drops the phone",
+   "run": "wd6-apblock (3), wd6-apblock-r",
+   "date": "2026-11-10, 2026-11-11",
+   "shows": "4/4 outages over 2 boots: link down ~8 s after the ban, back up ~70 s later, ping 10/10"
+  },
+  {
+   "feature": "Wi-Fi up on 3 consecutive cold boots",
+   "run": "wd6-cold1, wd6-cold2, wd6-cold3",
+   "date": "2026-11-10",
+   "shows": "join +138 s, ping 10/10 each boot"
+  },
+  {
+   "feature": "Wi-Fi throughput (TCP, 30 s, every 1 s interval)",
+   "run": "wlan-perf-f2, wlan-perf-f3",
+   "date": "2026-11-09",
+   "shows": "down 112.4 / 110.2 Mbit/s, up 67.8 / 68.1 Mbit/s, ping p50 3-7.5 ms under load"
+  },
+  {
+   "feature": "Bluetooth on Apple's stock bluetoothd (BCM4389)",
+   "run": "bt-pr2, bt-pr3",
+   "date": "2026-11-10",
+   "shows": "stack powered in 53-75 ms, stock daemon, 0 daemon exits"
+  },
+  {
+   "feature": "Bluetooth LE connect",
+   "run": "bt-pr3, bt-pr4",
+   "date": "2026-11-10",
+   "shows": "LE connect PASS"
+  },
+  {
+   "feature": "Bluetooth LE advertising",
+   "run": "bt-pr4",
+   "date": "2026-11-10",
+   "shows": "advertising set up, chip status 00, 90 s PASS"
+  },
+  {
+   "feature": "Bluetooth headset paired and connected, by hand in Settings",
+   "run": "job 1308 (demo boot)",
+   "date": "2026-11-15",
+   "shows": "HCI Simple Pairing Complete status 0, Link Key Notification, 3 Connection Complete status 0; no A2DP stream (no audio)"
+  },
+  {
+   "feature": "Bluetooth firmware load no longer spins a core for 41.5 s (patch 0360)",
+   "run": "d9a3",
+   "date": "2026-11-15",
+   "shows": "the 41.5 s kernel spinner is gone from the CPU top"
+  },
+  {
+   "feature": "Bluetooth scan (CoreBluetooth, in our test app; not yet observed on the Settings screen)",
+   "run": "bt-pr3, bt-hotpair",
+   "date": "2026-11-10, 2026-11-11",
+   "shows": "21 / 28 nearby devices (52 / 54 advertisement reports)"
+  },
+  {
+   "feature": "Bluetooth pairing with a PC; bond survives a reboot",
+   "run": "bt-hotpair, bt-a2dp",
+   "date": "2026-11-11",
+   "shows": "PIN success, paired + bonded on both sides; after reboot iOS reports bonded=1 (the PC reconnected; iOS did not auto-reconnect)"
+  },
+  {
+   "feature": "MobileSafari launched on the demo boot (page load itself not logged)",
+   "run": "job 1308 (demo boot)",
+   "date": "2026-11-15",
+   "shows": "MobileSafari exec x12 in the log; internet itself is shown by the pixnet checks"
+  },
+  {
+   "feature": "Charging while running iOS (875 mA on USB 3)",
+   "run": "chg-p3",
+   "date": "2026-11-10",
+   "shows": "battery current -40 mA -> +107..+205 mA, 0 charger bus errors"
+  }
+ ],
+ "known_issues": [
+  "No audio output yet: the phone has no speaker/codec driver; with a real headset A2DP pairs and the stream configures (SBC 44.1 kHz, bt-va3), but iOS never sends Start, so no sound plays.",
+  "Drawn presents reaching the panel are 49.0 per second (run 18e1) against the bar of 50: not met. About 1.8 per second of swaps are still lost when a third swap lands inside the hold.",
+  "This config runs 5 of the 8 CPU cores, CPU A76 at 1663 MHz and X1 at 1826 MHz (static), GPU 150 MHz, memory 1352 MHz. A boot needs the PixOS shim and the iOS userdata root.",
+  "UDP download loses packets under heavy load: 27.3 % and 39.5 % in the two bench boots (155b, 8177); 2.4 % in one run after the bench, 0 in others. The cause is not found.",
+  "The iOS daemon lskdd exits about once a second all boot long (14 to 16 ms each) and is restarted; cause not found, not disabled.",
+  "Cold start counts in the bench: the first 13 s cost about 0.17 pooled fps; about 593 MB of UFS writes in 10 min from an unknown writer.",
+  "Spotlight: a band under the status bar draws as transparent black; the magnifier glyph is missing in the search field (2026-11-11 list, not re-checked).",
+  "The joined network shows a \"Weak Security\" label in Settings.",
+  "Not yet: audio playback, cellular, camera, sensors, Face ID / fingerprint, sleep/wake."
+ ],
+ "features_as_of": "2026-11-15"
+}

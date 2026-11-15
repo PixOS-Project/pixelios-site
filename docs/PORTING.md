@@ -1,5 +1,8 @@
 # Adding a device
 
+**Last verified: 2026-11-15.** This page is for another phone with a Tensor SoC. For any other device or another iOS build, start with the [Porting blueprint](BLUEPRINT.md).
+Driving the port with an LLM agent? Paste one of the [LLM prompts](PROMPTS.md).
+
 Everything a phone needs lives in two small trees, so a new Pixel is mostly data:
 
 - `soc/<vendor>/<soc>/`: shared by every phone with that chip.
@@ -13,7 +16,7 @@ about other phones is what you should expect, not what we have seen. Capture log
 | Phone | Codename | SoC | What to expect |
 |---|---|---|---|
 | Pixel 6a | bluejay | gs101 (Tensor G1) | **verified** |
-| Pixel 6 / 6 Pro | oriole / raven | gs101 | same SoC trees; only DRAM size, framebuffer and display size differ. Best first target. |
+| Pixel 6 / 6 Pro | oriole / raven | gs101 | same SoC trees; we expect DRAM size, framebuffer, display, touch and radio modules to differ (*guess*: not checked on these phones). Best first target. |
 | Pixel 7 family | panther / cheetah / lynx | gs201 (Tensor G2) | new SoC tree: UFS/PHY tables, USB, memory map need re-deriving from that SoC's vendor kernel |
 | Pixel 8 / 9 families | shiba, husky / tokay, ... | zuma / zumapro | as above, plus newer bootloader behaviour |
 
@@ -33,7 +36,24 @@ about other phones is what you should expect, not what we have seen. Capture log
 4. **Fill `board.json`, then `tools/pix check oriole`.** It checks required keys and alignment
    (for example the RAM handed to XNU must be 32 MiB aligned and hole-free).
 5. **Run the gates** in [Plan](PLAN.md): shim runs, UFS reads (`--udump` to compare against Android), XNU boots.
-6. **Contribute the captures** under `device/google/oriole/hardware/` and a short `docs/` note.
+6. **Use the measurement loop** below instead of ad-hoc commands.
+7. **Contribute the captures** under `device/google/oriole/hardware/` and a short `docs/` note.
+
+## The measurement loop (tools as of 2026-11-11, *read from source*: the tool headers in `pixelios-kernel`)
+
+Every claim on the [Status](STATUS.md) page comes out of this loop, so a new device should use it from the first boot:
+
+| Tool | What it does |
+|---|---|
+| `tools/pix devices`, `info`, `check`, `build` | list device trees, print the merged board definition, sanity-check it, build the shim image |
+| `tools/phone state` / `tools/phone goto fastboot\|recovery\|android\|ios\|absent` | read which state the phone is in and move it to another one; ends with `RESULT: PASS\|FAIL\|PARTIAL\|ERROR`; `phone state` also tells you whether it is the expected codename |
+| `tools/xrun` | one hardware cycle: build the image, `fastboot boot` it, collect the log, wait for the self-reset, print one report ending in `RESULT:`. Each `--expect REGEX` row must match a log line |
+| `tools/usbnet-log.py` | receives the phone's live kernel console over USB Ethernet (UDP port 5140, no root); the interface address needs one `sudo` line on the host. This is the debug channel; the QR log (`tools/qr-log.py`) is only a fallback |
+| `tools/mkadt.py` | builds the minimal Apple device tree that XNU needs from the board data |
+| `tools/gate` | the gate entry point a change passes before it counts (`--quick` runs the steps the diff needs, `--formal` runs every step) |
+
+Two habits keep numbers honest: a run is tagged with its label (for example `gputest-cced-poll20`), and a result is quoted as what the run printed, with "one run" when it was not repeated.
+A panic no longer needs a hand on the phone: a kernel panic returns it to fastboot by itself (*observed on hardware*, one run, 2026-11-07, `20261107T145123Z-panic-self-recover`).
 
 ## New SoC (e.g. gs201)
 
@@ -59,4 +79,4 @@ yourself editing them for one phone, the data probably belongs in `board.json` o
   block in `shim/shim.c`. It is shared by every gs101 device, but a different SoC needs its own
   probe; splitting it behind a small board interface is the next refactor.
 - The safety audit script and a few tool names still say `bluejay`; they apply to every gs101 device.
-- On gs101 the display runs on the bootloader's framebuffer (no scan-out driver) and touch works (FTM5 over SPI, rails via ACPM); buttons are partly tested and battery is not ported.
+- On gs101 the display runs on the bootloader's framebuffer (no scan-out driver of our own) and touch works (FTM5 over SPI, rails via ACPM); buttons are partly tested. The GPU (Mali-G78), Wi-Fi (BCM4389) and Bluetooth drivers and the charger setting work on the Pixel 6a (*observed*, see [Status](STATUS.md)); a Pixel 6 or 6 Pro has the same SoC but may differ in radio module, panel and touch controller, so re-measure before you expect them to carry over (*guess*: not checked on those phones).
