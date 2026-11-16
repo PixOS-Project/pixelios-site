@@ -2,7 +2,7 @@
 
 Thanks for looking. This is hardware bring-up, so a few rules keep it safe and honest.
 
-**Last verified: 2026-11-11.**
+**Last verified: 2026-11-16.**
 
 - **Safety first.** Read [docs/SAFETY.md](https://github.com/PixOS-Project/pixelios-kernel/blob/main/docs/SAFETY.md). Code that runs before the kernel
   (`shim/`) must stay read-only toward storage unless a change is reviewed as a hardware writer.
@@ -25,7 +25,7 @@ firmware into prompts or commits. See [docs/AI_DEVELOPMENT.md](docs/AI_DEVELOPME
 
 ## Getting started
 
-1. Read [docs/STATUS.md](docs/STATUS.md), [docs/MILESTONES.md](docs/MILESTONES.md), [docs/METHOD.md](docs/METHOD.md) and [ROADMAP.md](ROADMAP.md) to see what exists, what is wanted and how we work.
+1. Read [docs/STATUS.md](docs/STATUS.md) (what works), the [component pages](docs/components/index.md) (each has an "Ideas if you want to pick it up" section), [open milestones](docs/milestones/open.md) (what would prove each open item), [docs/METHOD.md](docs/METHOD.md) and [ROADMAP.md](ROADMAP.md).
 2. Pick an issue. Open work is tracked as GitHub milestones and issues in [pixelios-kernel](https://github.com/PixOS-Project/pixelios-kernel/issues) and [pixelios-userland](https://github.com/PixOS-Project/pixelios-userland/issues); issues labelled `good first issue` need no Pixel 6a or only host tools. Each issue states its oracle: what proves it done. Comment on it before you start so two people do not do the same work.
 3. Set up: the build steps in [docs/BUILD.md](https://github.com/PixOS-Project/pixelios-kernel/blob/main/docs/BUILD.md). Run `tools/check-all.sh` before you push; it must print `GATE PASS`.
 4. Kernel changes are numbered patches in `xnu/patches/` (contiguous, applied in order on xnu-8796). Never edit the fetched upstream tree; add or regenerate a patch.

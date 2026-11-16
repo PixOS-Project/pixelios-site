@@ -4,18 +4,18 @@ Each phase ended with a hardware gate. All work follows [SAFETY.md](https://gith
 Steps marked **[user]** are run by the maintainer (destructive, or needs the phone in hand). Status tags: *observed on hardware*, *read from source*, *guess*.
 Local toolchain setup: [BUILD.md](https://github.com/PixOS-Project/pixelios-kernel/blob/main/docs/BUILD.md). What works today: [Status](STATUS.md).
 
-**Last verified: 2026-11-15.** This is the original phase plan (2026-10-20) with each phase's outcome. For a device-agnostic version
-of these stages, see the [Porting blueprint](BLUEPRINT.md); for the live numbers, [Milestones](MILESTONES.md).
+**Last verified: 2026-11-16.** This is the original phase plan (2026-10-20) with each phase's outcome. For a device-agnostic version
+of these stages, see the [Porting blueprint](BLUEPRINT.md); for the live numbers and the story of each phase, [Milestones](MILESTONES.md).
 
-| Phase | Gate | State (2026-11-11) |
+| Phase | Gate | State (2026-11-15) |
 |---|---|---|
 | 0 Probe shim, no XNU | shim runs and reports the hardware | **passed**, *observed* 2026-10-21 |
 | 1 XNU to the framebuffer console | XNU reaches "waiting for root device" | **passed**, *observed* 2026-10-21 |
 | 2 Root from UFS | launchd runs from the `userdata` root | **passed**, *observed* 2026-10-21 |
 | 3 SpringBoard | lock screen on the Pixel | **passed**, *observed* 2026-10-22 |
-| 4 Input and USB | unlock, navigate, network over USB | touch and USB network **passed** (2026-10-22); buttons partial (no key press tested) |
+| 4 Input and USB | unlock, navigate, network over USB | touch and USB network **passed** (2026-10-22); buttons partial (presses reach the kernel, 2026-11-11; iOS reaction not checked) |
 | 5 Wi-Fi | Settings shows Wi-Fi and the phone gets a connection | **passed**, *observed* 2026-11-08/09: joined from Settings with a DHCP lease, runs `wlan-wui-f2`, `wlan-wui-g`; throughput and reconnect since |
-| 6 Graphics | UI composited by the GPU | **passed**, *observed* 2026-11-09: the GPU draws the UI, slowest navigation step 56.6 frames/s, runs `gputest-nav43`, `gputest-nav44`; 60 on every step is open |
+| 6 Graphics | UI composited by the GPU | **passed**, *observed* 2026-11-09: the GPU draws the UI, slowest navigation step 56.6 frames/s, runs `gputest-nav43`, `gputest-nav44`; 50.6 rendered at the lowest GPU clock on 2026-11-15, runs `155b`, `8177`; 60 on every step is open |
 | 7 Bluetooth (added later) | iOS Bluetooth works on the stock daemon | **passed**, *observed* 2026-11-10/11: scan, connect, advertise, pair, runs `bt-pr3`, `bt-pr4`, `bt-hotpair` |
 | 8 Audio, power (added later) | sound out, battery charges | charging one run (`chg-p3`, 2026-11-10); audio open |
 

@@ -1,6 +1,6 @@
 # Repository map
 
-**Last verified: 2026-11-15** (against the kernel and userland trees).
+**Last verified: 2026-11-16** (against the kernel and userland trees).
 
 The tree follows AOSP's idea: shared platform code in one place, then **SoC** trees (what every
 device with a chip shares), then **device** trees (what one phone adds).
@@ -29,13 +29,13 @@ The project is three repositories: [pixelios-kernel](https://github.com/PixOS-Pr
 [pixelios-userland](https://github.com/PixOS-Project/pixelios-userland) (the iOS root build, the Mesa patch series, the EAGL/GL layer design and our iOS-side helpers) and
 [pixelios-site](https://github.com/PixOS-Project/pixelios-site) (this site; `tools/build-site.py` assembles it).
 
-## Reading order
+## Where to read about a part
 
-1. [AI-driven development](AI_DEVELOPMENT.md): how the project is made, and how to read it.
-2. [Status](STATUS.md), [Method](METHOD.md) and the [Porting blueprint](BLUEPRINT.md): where the project is, how we work, and the stages in order.
-3. [Safety](https://github.com/PixOS-Project/pixelios-kernel/blob/main/docs/SAFETY.md): the rules every change follows.
-4. [Boot path](https://github.com/PixOS-Project/pixelios-kernel/blob/main/docs/research/01-boot-path.md): how a Pixel reaches our code.
-5. The device you care about under [Devices](devices/index.md), and its SoC under [SoCs](socs/index.md).
+- What each directory's code does on the phone, block by block: [Components](components/index.md).
+- How the project is made and how to read it: [AI-driven development](AI_DEVELOPMENT.md).
+- The rules every change follows: [Safety](https://github.com/PixOS-Project/pixelios-kernel/blob/main/docs/SAFETY.md).
+- How a Pixel reaches our code: [Boot chain](components/boot-chain.md) and the [boot path note](https://github.com/PixOS-Project/pixelios-kernel/blob/main/docs/research/01-boot-path.md).
+- The device you care about under [Devices](devices/index.md), and its SoC under [SoCs](socs/index.md).
 
 ## Commands
 

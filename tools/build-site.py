@@ -4,6 +4,10 @@
   python3 tools/build-site.py [OUTDIR]        default .site
   pip install mkdocs-material && mkdocs build -f .site/mkdocs.yml -d site
 
+soc/ and device/ come from the pixelios-kernel checkout: link them into this checkout (as the Pages
+workflow does), or point PIXOS_KERNEL_DIR at the kernel checkout, or keep it side by side as
+../pixelios-kernel. Without one of these the build prints a warning and leaves Devices and SoCs empty.
+
 Device and SoC pages are generated from their json files, so adding a device tree adds its page.
 Relative links are rewritten while copying: links between pages that end up in the site stay
 relative, links to other repository files become GitHub links, so nothing breaks wherever a
@@ -21,18 +25,35 @@ SRC = os.path.join(OUT, "src")
 GH = "https://github.com/PixOS-Project/pixelios-kernel/blob/main/"
 UPSTREAM = "https://github.com/dipa-studio/ios-sweet/blob/11da58bd050672960c0a83b5bef2176047eea479/"
 
+# soc/ and device/ live in pixelios-kernel: linked into ROOT (CI), or PIXOS_KERNEL_DIR, or ../pixelios-kernel
+KERNEL = ROOT
+if not os.path.isdir(os.path.join(ROOT, "soc")):
+    for cand in (os.environ.get("PIXOS_KERNEL_DIR"), os.path.join(ROOT, "..", "pixelios-kernel")):
+        if cand and os.path.isdir(os.path.join(cand, "soc")):
+            KERNEL = os.path.abspath(cand)
+            break
+    else:
+        print("WARNING build-site: no soc/ and device/ trees found: the Devices and SoCs sections will be EMPTY. "
+              "Link them from pixelios-kernel into this checkout or set PIXOS_KERNEL_DIR.", file=sys.stderr)
+
+
+def src(rel):
+    """Absolute path of a repo-relative source: soc/ and device/ come from the kernel checkout."""
+    return os.path.join(KERNEL if rel.split("/")[0] in ("soc", "device") else ROOT, rel)
+
+
 pages = {}      # original repo path -> site path (under src/)
 extra = {}      # site path -> generated text
 copied = {}     # original repo path -> site path (non-markdown assets)
 
 
 def rd(rel):
-    with open(os.path.join(ROOT, rel), encoding="utf-8") as f:
+    with open(src(rel), encoding="utf-8") as f:
         return f.read()
 
 
 def jload(rel):
-    with open(os.path.join(ROOT, rel)) as f:
+    with open(src(rel)) as f:
         return json.load(f)
 
 
@@ -40,43 +61,44 @@ def jload(rel):
 for f in sorted(os.listdir(os.path.join(ROOT, "docs"))):
     if f.endswith(".md"):
         pages["docs/" + f] = f
-for sub in ("research", "reviews"):
+for sub in ("milestones", "components", "research", "reviews"):
     d = os.path.join(ROOT, "docs", sub)
     for f in sorted(os.listdir(d)) if os.path.isdir(d) else []:
         if f.endswith(".md"):
             pages["docs/%s/%s" % (sub, f)] = "%s/%s" % (sub, f)
 pages["CONTRIBUTING.md"] = "CONTRIBUTING.md"
+pages["ROADMAP.md"] = "ROADMAP.md"
 
 devices, socs = [], []
-for vendor in sorted(os.listdir(os.path.join(ROOT, "device"))) if os.path.isdir(os.path.join(ROOT, "device")) else []:
-    if not os.path.isdir(os.path.join(ROOT, "device", vendor)):
+for vendor in sorted(os.listdir(os.path.join(KERNEL, "device"))) if os.path.isdir(os.path.join(KERNEL, "device")) else []:
+    if not os.path.isdir(os.path.join(KERNEL, "device", vendor)):
         continue    # e.g. device/AGENTS.md
-    for code in sorted(os.listdir(os.path.join(ROOT, "device", vendor))):
+    for code in sorted(os.listdir(os.path.join(KERNEL, "device", vendor))):
         base = "device/%s/%s" % (vendor, code)
-        if not os.path.isfile(os.path.join(ROOT, base, "board.json")):
+        if not os.path.isfile(os.path.join(KERNEL, base, "board.json")):
             continue
         devices.append((vendor, code, base))
         site = "devices/%s/%s" % (vendor, code)
         for sub in ("docs",):
-            d = os.path.join(ROOT, base, sub)
+            d = os.path.join(KERNEL, base, sub)
             for f in sorted(os.listdir(d)) if os.path.isdir(d) else []:
                 if f.endswith(".md"):
                     pages["%s/%s/%s" % (base, sub, f)] = "%s/%s" % (site, f)
-        if os.path.isfile(os.path.join(ROOT, base, "README.md")):
+        if os.path.isfile(os.path.join(KERNEL, base, "README.md")):
             pages[base + "/README.md"] = site + "/index.md"
-        hw = os.path.join(ROOT, base, "hardware")
+        hw = os.path.join(KERNEL, base, "hardware")
         for f in sorted(os.listdir(hw)) if os.path.isdir(hw) else []:
             copied["%s/hardware/%s" % (base, f)] = "%s/hardware/%s" % (site, f)
-for vendor in sorted(os.listdir(os.path.join(ROOT, "soc"))) if os.path.isdir(os.path.join(ROOT, "soc")) else []:
-    if not os.path.isdir(os.path.join(ROOT, "soc", vendor)):
+for vendor in sorted(os.listdir(os.path.join(KERNEL, "soc"))) if os.path.isdir(os.path.join(KERNEL, "soc")) else []:
+    if not os.path.isdir(os.path.join(KERNEL, "soc", vendor)):
         continue    # e.g. soc/AGENTS.md
-    for name in sorted(os.listdir(os.path.join(ROOT, "soc", vendor))):
+    for name in sorted(os.listdir(os.path.join(KERNEL, "soc", vendor))):
         base = "soc/%s/%s" % (vendor, name)
-        if not os.path.isfile(os.path.join(ROOT, base, "soc.json")):
+        if not os.path.isfile(os.path.join(KERNEL, base, "soc.json")):
             continue
         socs.append((vendor, name, base))
         site = "socs/%s/%s" % (vendor, name)
-        d = os.path.join(ROOT, base, "docs")
+        d = os.path.join(KERNEL, base, "docs")
         for f in sorted(os.listdir(d)) if os.path.isdir(d) else []:
             if f.endswith(".md"):
                 pages["%s/docs/%s" % (base, f)] = "%s/%s" % (site, f)
@@ -103,8 +125,8 @@ def rewrite(orig, text):
             return m.group(1) + UPSTREAM + full[len(".upstream/"):] + m.group(3)
         if full.startswith("..") or full.startswith("/"):
             return m.group(0)
-        if os.path.exists(os.path.join(ROOT, full)):
-            kind = "tree" if os.path.isdir(os.path.join(ROOT, full)) else "blob"
+        if os.path.exists(src(full)):
+            kind = "tree" if os.path.isdir(src(full)) else "blob"
             return m.group(1) + GH.replace("blob", kind) + full + m.group(3)
         return m.group(0)
     return LINK.sub(sub, text)
@@ -152,7 +174,7 @@ for vendor, code, base in devices:
     if hw:
         body += "\n## Hardware captures\n\n" + "\n".join(
             "- [%s](hardware/%s) (%d KiB)" % (os.path.basename(c), os.path.basename(c),
-                                             os.path.getsize(os.path.join(ROOT, c)) // 1024 + 1) for c in hw) + "\n"
+                                             os.path.getsize(src(c)) // 1024 + 1) for c in hw) + "\n"
     readme = base + "/README.md"
     if readme in pages:
         body += "\n---\n\n" + rd(readme)
@@ -168,7 +190,7 @@ for vendor, name, base in socs:
     body += md_table([[k, "`%s`" % json.dumps(s[k])] for k in keys], ["Key", "Value"]) + "\n"
     if s.get("notes"):
         body += "\n## Notes\n\n" + "\n".join("- **%s**: %s" % (k, v) for k, v in s["notes"].items()) + "\n"
-    srcd = os.path.join(ROOT, base, "shim")
+    srcd = src(base + "/shim")
     if os.path.isdir(srcd):
         body += "\n## Shim sources\n\n" + "\n".join("- [`%s`](%s%s/shim/%s)" % (f, GH, base, f) for f in sorted(os.listdir(srcd))) + "\n"
     extra[site + "/index.md"] = body
@@ -190,7 +212,7 @@ for site, text in extra.items():
 for orig, site in copied.items():
     dst = os.path.join(SRC, site)
     os.makedirs(os.path.dirname(dst), exist_ok=True)
-    shutil.copy2(os.path.join(ROOT, orig), dst)
+    shutil.copy2(src(orig), dst)
 
 
 def title(site):
@@ -202,36 +224,80 @@ def title(site):
     return os.path.basename(site)
 
 
-def entry(site):
-    return "      - \"%s\": %s" % (title(site), site)
+# short labels for the navigation; a page not listed here shows its own title
+NAV_TITLE = {
+    "STATUS.md": "What works today", "TRY.md": "Try it", "RELEASE-2026-11-15.md": "Release note 2026-11-15", "ROADMAP.md": "Roadmap",
+    "BLUEPRINT.md": "Porting blueprint", "PORTING.md": "Adding a Tensor device", "IOS-INTERFACES.md": "iOS 16.7 interface notes",
+    "METHOD.md": "Method", "LESSONS.md": "Lessons", "PROMPTS.md": "LLM prompts", "CASE_STUDY.md": "Case study",
+    "PLAN.md": "The original plan", "AI_DEVELOPMENT.md": "AI-driven development", "MAP.md": "Repository map",
+    "REQUIREMENTS.md": "Building this site", "CONTRIBUTING.md": "Contributing", "CREDITS.md": "Credits and licensing",
+    "milestones/first-boot.md": "First boot", "milestones/springboard.md": "SpringBoard", "milestones/test-loop.md": "Hands-free test loop",
+    "milestones/gpu.md": "GPU to 55 frames/s", "milestones/wifi.md": "Wi-Fi in Settings", "milestones/bluetooth.md": "Bluetooth",
+    "milestones/charging.md": "Charging", "milestones/all-on-low-clock.md": "Everything at once, low clocks", "milestones/open.md": "Open milestones",
+    "components/boot-chain.md": "Boot chain", "components/cpu-smp.md": "CPU and SMP", "components/interrupts-timers.md": "Interrupts and timers",
+    "components/clocks-dvfs.md": "Clocks and DVFS", "components/storage-ufs.md": "Storage (UFS)", "components/usb-debug.md": "USB and debug channel",
+    "components/recovery.md": "Recovery", "components/userland.md": "iOS userland", "components/display.md": "Display",
+    "components/gpu.md": "GPU", "components/touch.md": "Touch", "components/buttons.md": "Buttons", "components/wifi.md": "Wi-Fi",
+    "components/bluetooth.md": "Bluetooth", "components/audio.md": "Audio", "components/power-charging.md": "Power and charging",
+    "components/thermal.md": "Thermal", "components/not-attempted.md": "Not attempted",
+}
 
+
+def entry(site):
+    return "      - \"%s\": %s" % (NAV_TITLE.get(site) or title(site), site)
+
+
+def have(site):
+    return os.path.exists(os.path.join(SRC, site))
+
+
+def section(name, sites):
+    rows = [entry(p) for p in sites if have(p)]
+    return (["  - %s:" % name] + rows) if rows else []   # mkdocs rejects an empty section
+
+
+def subdir(sub, first=()):
+    """A section from docs/<sub>/: the overview page first, then `first` in that order, then the rest by name."""
+    names = sorted(x for x in pages.values() if x.startswith(sub + "/"))
+    order = [sub + "/" + f for f in first if sub + "/" + f in names]
+    order += [x for x in names if x not in order and not x.endswith("/index.md")]
+    return order
+
+
+MILESTONE_ORDER = ("first-boot.md", "springboard.md", "test-loop.md", "gpu.md", "wifi.md", "bluetooth.md", "charging.md",
+                   "all-on-low-clock.md", "open.md")
+COMPONENT_ORDER = ("boot-chain.md", "cpu-smp.md", "interrupts-timers.md", "clocks-dvfs.md", "storage-ufs.md", "usb-debug.md",
+                   "recovery.md", "userland.md", "display.md", "gpu.md", "touch.md", "buttons.md", "wifi.md", "bluetooth.md",
+                   "audio.md", "power-charging.md", "thermal.md", "not-attempted.md")
 
 nav = ["nav:", "  - Home: index.md"]
-nav += ["  - Project:"] + [entry(p) for p in ("STATUS.md", "RELEASE-2026-11-15.md", "MILESTONES.md", "CONTRIBUTING.md", "AI_DEVELOPMENT.md") if os.path.exists(os.path.join(SRC, p))]
-nav += ["  - For any HackiOS port:"] + [entry(p) for p in ("BLUEPRINT.md", "IOS-INTERFACES.md", "METHOD.md", "PROMPTS.md", "LESSONS.md") if os.path.exists(os.path.join(SRC, p))]
-nav += ["  - Guide:"] + [entry(p) for p in ("BUILD.md", "QR_LOG.md", "AUTOMATION.md", "ROOTLESS_BUILD.md", "PORTING.md", "MAP.md", "SAFETY.md")
-        if os.path.exists(os.path.join(SRC, p))]
-nav += ["  - Design:"] + [entry(p) for p in ("PLAN.md", "CASE_STUDY.md") if os.path.exists(os.path.join(SRC, p))]
-nav += ["  - Devices:", "      - Overview: devices/index.md"]
+nav += section("Start here", ("STATUS.md", "TRY.md", "RELEASE-2026-11-15.md", "ROADMAP.md"))
+nav += ["  - Milestones:", "      - Overview: MILESTONES.md"] + [entry(p) for p in subdir("milestones", MILESTONE_ORDER)]
+_c = subdir("components", COMPONENT_ORDER)
+nav += (["  - Components:"] + (["      - Overview: components/index.md"] if have("components/index.md") else []) + [entry(p) for p in _c]) if _c else []
+nav += section("Port your own", ("BLUEPRINT.md", "PORTING.md", "IOS-INTERFACES.md", "METHOD.md", "LESSONS.md", "PROMPTS.md"))
+nav += section("Story", ("CASE_STUDY.md", "PLAN.md", "AI_DEVELOPMENT.md"))
+nav += ["  - Reference:"] + [entry(p) for p in ("MAP.md", "REQUIREMENTS.md") if have(p)]
+nav += ["      - Devices:", "          - Overview: devices/index.md"]
 for vendor, code, base in devices:
-    nav.append("      - \"%s\":" % jload(base + "/board.json")["name"])
-    nav.append("          - Overview: devices/%s/%s/index.md" % (vendor, code))
+    nav.append("          - \"%s\":" % jload(base + "/board.json")["name"])
+    nav.append("              - Overview: devices/%s/%s/index.md" % (vendor, code))
     for p in sorted(x for x in pages.values() if x.startswith("devices/%s/%s/" % (vendor, code)) and not x.endswith("index.md")):
-        nav.append("          - \"%s\": %s" % (title(p), p))
-nav += ["  - SoCs:", "      - Overview: socs/index.md"]
+        nav.append("              - \"%s\": %s" % (title(p), p))
+nav += ["      - SoCs:", "          - Overview: socs/index.md"]
 for vendor, name, base in socs:
-    nav.append("      - \"%s\":" % jload(base + "/soc.json")["name"])
-    nav.append("          - Overview: socs/%s/%s/index.md" % (vendor, name))
+    nav.append("          - \"%s\":" % jload(base + "/soc.json")["name"])
+    nav.append("              - Overview: socs/%s/%s/index.md" % (vendor, name))
     for p in sorted(x for x in pages.values() if x.startswith("socs/%s/%s/" % (vendor, name)) and not x.endswith("index.md")):
-        nav.append("          - \"%s\": %s" % (title(p), p))
+        nav.append("              - \"%s\": %s" % (title(p), p))
 _l = [entry(p) for p in sorted(x for x in pages.values() if x.startswith("research/"))]
 nav += (["  - Research:"] + _l) if _l else []   # mkdocs rejects an empty section
 _l = [entry(p) for p in sorted(x for x in pages.values() if x.startswith("reviews/"))]
 nav += (["  - Reviews:"] + _l) if _l else []   # mkdocs rejects an empty section
-nav += ["  - Credits: CREDITS.md"]
+nav += section("Contribute", ("CONTRIBUTING.md", "CREDITS.md"))
 
 cfg = """site_name: PixOS
-site_description: Apple's XNU and iOS 16.7 on the Google Pixel 6a (Tensor G1), with a porting blueprint, method and LLM prompts for any HackiOS project
+site_description: Apple's XNU and iOS 16.7 on the Google Pixel 6a (Tensor G1) - what works, how each milestone was reached, every hardware component, and a porting blueprint for other devices
 site_url: https://pixos-project.github.io/pixelios-site/
 repo_url: https://github.com/PixOS-Project/pixelios-site
 repo_name: PixOS-Project/pixelios-site
@@ -245,13 +311,23 @@ theme:
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
       toggle: {icon: material/brightness-4, name: Light mode}
-  features: [navigation.sections, navigation.top, search.suggest, content.code.copy, toc.follow]
+  features: [navigation.tabs, navigation.sections, navigation.top, navigation.footer, search.suggest, search.highlight, content.code.copy, toc.follow]
 markdown_extensions:
   - admonition
+  - attr_list
+  - md_in_html
   - tables
   - toc: {permalink: true}
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - pymdownx.highlight
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
 validation:
   omitted_files: ignore
   unrecognized_links: warn

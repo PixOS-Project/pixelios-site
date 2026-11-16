@@ -1,6 +1,6 @@
 # Method: the working rules that made progress
 
-**Last verified: 2026-11-15.** These are the rules PixOS works by today, written so another HackiOS project can adopt them without our tools.
+**Last verified: 2026-11-16.** These are the rules PixOS works by today, written so another HackiOS project can adopt them without our tools.
 Each rule says where it came from: most were adopted after a mistake that cost boots or days ([Lessons](LESSONS.md) has the stories).
 Sources: the project's hard rules (`AGENTS.md` in [pixelios-kernel](https://github.com/PixOS-Project/pixelios-kernel)), the maintainers' rule list and sprint logs (private, summarized here).
 
@@ -59,7 +59,7 @@ PixOS has one test phone and several parallel work streams (GPU, Wi-Fi, Bluetoot
 - **A shared standard root image.** Everyone boots the same root; a worker who needs a variant uses an overlay applied at boot instead of re-flashing `userdata`, because a re-flash changes the next boot for everyone (a first boot after a flash runs a slow data migration).
 - **Prepare the next boot while this one runs**: the review, the build and the analysis script, so the phone does not sit idle between holds.
 - **Stop when the number does not move.** Two boots in a row that leave the metric inside run-to-run noise mean the model of the problem is wrong: stop, write down what the result rules out, then test a new model. A stream that has not moved its number in its last N boots is stuck, however busy it looks (judge it over the whole stream, not per time window).
-- **A resident session** (the phone stays in iOS and runs queued jobs from several workers before parking) is being built to cut boot overhead further (host work started 2026-11-11, not yet run on the phone).
+- **A queued session**: the phone stays in iOS and runs queued jobs from several workers before it parks, which cuts boot overhead (in use since 2026-11-11; the 2026-11-15 bench boots ran this way).
 - **A QEMU lab** booted the iOS root to SpringBoard in an emulator (host only, 2026-11-11, feasibility study): userland work that needs no Pixel hardware can move there.
 
 ## 8. Port a block in a fixed order

@@ -1,10 +1,18 @@
 # PixOS: documentation site
 
-Documentation for PixOS (Apple XNU and the iOS 16.7 userland on a Google Pixel 6a, Tensor G1): status and features, milestones,
-a device- and iOS-version-agnostic porting blueprint, the working method, copy-paste LLM prompts, the lessons we learned the hard way,
-the case study, the code map and credits. Published at <https://pixos-project.github.io/pixelios-site/> by the Pages workflow on every push.
+Documentation for PixOS (Apple XNU and the iOS 16.7 userland on a Google Pixel 6a, Tensor G1).
+Published at <https://pixos-project.github.io/pixelios-site/> by the Pages workflow on every push.
 
-**Last verified: 2026-11-15.**
+**Last verified: 2026-11-16.**
+
+| Section | What is in it |
+|---|---|
+| [Home](docs/index.md), [Status](docs/STATUS.md), [Try it](docs/TRY.md), [Release note](docs/RELEASE-2026-11-15.md) | what works today, in one glance and in full; how to run it |
+| [Milestones](docs/MILESTONES.md) | one page per milestone: goal, what was done, how it was proven, what it unlocked, dead ends |
+| [Components](docs/components/index.md) | one page per hardware block: what worked, what did not, what was never tried, ideas, where to look |
+| [Blueprint](docs/BLUEPRINT.md), [Method](docs/METHOD.md), [Lessons](docs/LESSONS.md), [LLM prompts](docs/PROMPTS.md), [iOS interface notes](docs/IOS-INTERFACES.md) | for porting to another device or iOS build |
+| [Case study](docs/CASE_STUDY.md), [Plan](docs/PLAN.md), [AI-driven development](docs/AI_DEVELOPMENT.md) | the story and how the project is made |
+| [Repository map](docs/MAP.md), [Credits](docs/CREDITS.md) | reference, credits and licences |
 
 > **AI-driven development.** This project is written mostly by AI coding agents under the direction of a human maintainer, who owns the phone
 > and decides what is flashed or published. Read the code before you trust it. Details: [docs/AI_DEVELOPMENT.md](docs/AI_DEVELOPMENT.md).
@@ -17,10 +25,11 @@ Code lives in the other repositories:
 
 ## How the site is made
 
-- Pages are Markdown in `docs/`. Each carries a `Last verified: YYYY-MM-DD` line and names its sources.
+- Pages are Markdown in `docs/`, with one page per milestone in `docs/milestones/` and one per component in `docs/components/`.
+  Each carries a `Last verified: YYYY-MM-DD` line and names its sources. Component and milestone pages keep their fixed headings.
 - The feature list and the milestone ladder are generated: the maintainers' export writes `data/progress.json` from their run logs, and
   `tools/render_progress.py` renders the tables into `docs/STATUS.md` and `docs/MILESTONES.md`. Do not edit inside the generated blocks.
 - `tools/check-site.py` checks links into the other repositories, evidence on "works" rows, generated-table drift, stale claims, secrets and
-  the age of every page's `Last verified` line (a warning at 14 days; the weekly CI run turns it into an issue).
-- `tools/build-site.py` assembles the MkDocs site; it reads `soc/` and `device/` pages from the kernel repository, so it needs a
-  checkout of both side by side (see [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md)).
+  the age of every page's `Last verified` line (a warning at 14 days; the weekly CI run turns it into an issue). It covers every page under `docs/`.
+- `tools/build-site.py` assembles the MkDocs site and its navigation; it reads `soc/` and `device/` pages from the kernel repository
+  (linked into this checkout, or named by `PIXOS_KERNEL_DIR`; see [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md)).

@@ -53,3 +53,18 @@ before `fastboot boot`.
 - Loosen a safety audit (`tools/test-bluejay-boot.py`) to make a change pass; fix the change.
 - Invent hardware constants. Cite the source (Linux driver at a commit, ABL decompile, measured register dump).
 - Publish, push to a public remote, or change repo visibility without the user saying so.
+
+## This repository (pixelios-site)
+
+The text above is shared by the three PixOS repositories. In this one there is no shim or kernel code; the rules that apply are 4 and 5.
+
+- Pages: `docs/*.md`; one page per milestone in `docs/milestones/` (headings: Goal / What was done / How it was proven / What it unlocked /
+  Dead ends) and one per component in `docs/components/` (headings: What it is / Status / What worked / What didn't / Untested or never
+  attempted / Ideas if you want to pick it up / Where to look). Keep those headings; add a row to `docs/components/index.md` and
+  `docs/MILESTONES.md` when you add a page.
+- Every page carries `Last verified: YYYY-MM-DD`. Every claim is tagged; "works" needs a run label and a date. Leave out what you cannot source.
+- Plain language, short paragraphs. Nothing private: no host names, addresses, local paths, serials, network names, or names of the
+  maintainers' private tools and repositories.
+- Do not edit inside `<!-- progress:...:begin -->` blocks; they are rendered from `data/progress.json` by `tools/render_progress.py`.
+- Check before a push: `python3 tools/test_check_site.py && python3 tools/check-site.py`, then `python3 tools/build-site.py` and
+  `mkdocs build --strict -f .site/mkdocs.yml` (see `docs/REQUIREMENTS.md`). Navigation lives in `tools/build-site.py`.

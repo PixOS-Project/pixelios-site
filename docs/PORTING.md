@@ -1,7 +1,7 @@
 # Adding a device
 
-**Last verified: 2026-11-15.** This page is for another phone with a Tensor SoC. For any other device or another iOS build, start with the [Porting blueprint](BLUEPRINT.md).
-Driving the port with an LLM agent? Paste one of the [LLM prompts](PROMPTS.md).
+**Last verified: 2026-11-16.** This page is for another phone with a Tensor SoC. For any other device or another iOS build, start with the [Porting blueprint](BLUEPRINT.md).
+Driving the port with an LLM agent? Paste one of the [LLM prompts](PROMPTS.md). What each hardware block needed on the Pixel 6a: [Components](components/index.md).
 
 Everything a phone needs lives in two small trees, so a new Pixel is mostly data:
 
@@ -60,7 +60,7 @@ A panic no longer needs a hand on the phone: a kernel panic returns it to fastbo
 Add `soc/google/gs201/soc.json` and `soc/google/gs201/shim/`:
 
 - `ufsinit.c`, `ufsdiag.c` (UFS host and PHY bring-up; for gs101 this is derived from the Linux
-  `ufs-exynos` / `phy-gs101-ufs` sources, see the [UFS bring-up notes](socs/google/gs101/07-gs101-ufs-bringup.md)),
+  `ufs-exynos` / `phy-gs101-ufs` sources, see the [UFS bring-up notes](https://github.com/PixOS-Project/pixelios-kernel/blob/main/soc/google/gs101/docs/07-gs101-ufs-bringup.md)),
 - the UFS PHY tables (`tools/gen-ufsphy-tables.py` generates gs101's from the research notes),
 - USB gadget constants if the DWC3 block differs,
 - an XNU patch for the SoC's UFS driver if the host differs (see patch 0080).

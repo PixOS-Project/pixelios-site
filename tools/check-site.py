@@ -54,7 +54,7 @@ def age_findings(today, max_age):
 
 
 def md_files():
-    fs = glob.glob(SITE + "/*.md") + glob.glob(SITE + "/docs/*.md")
+    fs = glob.glob(SITE + "/*.md") + glob.glob(SITE + "/docs/**/*.md", recursive=True)   # every page, also docs/milestones/ and docs/components/
     return fs
 
 

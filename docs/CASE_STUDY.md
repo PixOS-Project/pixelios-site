@@ -1,6 +1,6 @@
 # Case study: porting ios-sweet to the Pixel 6a (bluejay)
 
-**Last verified: 2026-11-15** (sections 1-4 are the 2026-10-20 plan, kept as written; section 5 is today's outcome).
+**Last verified: 2026-11-16** (sections 1-4 are the 2026-10-20 plan, kept as written; section 5 is today's outcome).
 
 Sources: `docs/research/01..05` in `pixelios-kernel` (05 = primary-source fact-check), written as desk research on 2026-10-20,
 before any Pixel 6a boot. The tables below are that plan. Where a later hardware result settled an item it says so; items
@@ -37,7 +37,7 @@ That's the main thing the Pixel has to provide too.
 | Framebuffer | `0x9c000000`, video mode, live | `0xfac00000` 1080×2400 stride 4320 (measured in the live FDT; `board.json`); **command-mode** panel, ABL disables the DECON HW trigger | Write `0x3061` to `0x1C300030` (what postmarketOS does on all gs101); the panel shows the iOS UI (*observed*) |
 | UFS | std UFSHCI `0x1d84000` | Exynos UFSHCI `0x14700000`, PRDT byte granularity, FMP, S2MPU. The bootloader shuts the controller down, so the shim does a full cold re-init (*observed*) | Adapt 0028 / shim ufs.c |
 | Touch | Goodix over GENI I²C | STMicro FTM5 on `spi_11` (USI11 `0x10D40000`), IRQ gpa9-0, rails S2MPG10 LDO25M/26M | Rewritten, **works** (*observed*, 2026-10-22) |
-| Buttons | PMIC over SPMI | gpio-keys gpa7-3 / gpa8-1 (far-alive bank `0x174e0000`), power gpa10-1 | Driver starts; no key press tested yet |
+| Buttons | PMIC over SPMI | gpio-keys gpa7-3 / gpa8-1 (far-alive bank `0x174e0000`), power gpa10-1 | Power and volume-up presses logged (2026-11-11/12); iOS reaction not checked |
 | USB | DWC3 + Qualcomm PHY | DWC3 `0x11110000` + gs101 USB PHY | Reuse gadget/ECM, new PHY bits |
 | Battery | static source | static source | Reuse |
 | Debug | screen + UFS log ring | **SBU UART** (needs a 1.8 V cable; the current tooling does not use it), screen, RAM log, and the USB UDP log (the main channel, *observed*) |
@@ -54,7 +54,8 @@ drivers alongside.
 2. **`fastboot boot` of a custom image**: accepted with an AVB footer (*observed*), nothing is flashed to `boot*`.
 3. **UFS state at handoff**: the bootloader does tear the link down, so the shim runs a full cold init and switches to HS-G4 (*observed*).
 4. **Entry EL / memory map**: the live FDT's `memory` and `reserved-memory` are used; the RAM given to XNU is the hole-free high range at `0x880000000` (`board.json`).
-5. **Thermal**: still no thermal driver (*open*); idle loops use `wfi`; all 8 cores run, including the X1s.
+5. **Thermal**: no SoC thermal driver. Since 2026-11-12 a kernel thread reads the battery temperature and acts on a fixed table
+   (patch 0336, [Thermal](components/thermal.md)); idle loops use `wfi`; all 8 cores can run, the 2026-11-15 configuration uses 5.
 
 ## 4. Newer iOS (research/04)
 
@@ -75,5 +76,8 @@ and the Settings -> About hang.
 
 What came after the plan (*observed*, run labels on [Status](STATUS.md)): the GPU path (a Mali driver in XNU, Mesa Panfrost behind an EAGL
 layer) reached a slowest navigation step of 56.6 frames/s on 2026-11-09; Wi-Fi joined from Settings on 2026-11-08/09 and moves more than
-100 Mbit/s; Bluetooth runs on Apple's stock daemon since 2026-11-10; the battery charges since 2026-11-10 (one run). The detailed list of
-what went wrong on the way is on [Lessons](LESSONS.md); the reusable stages are on the [Porting blueprint](BLUEPRINT.md).
+100 Mbit/s; Bluetooth runs on Apple's stock daemon since 2026-11-10; the battery charges since 2026-11-10 (one run). On 2026-11-15 all of
+it ran in one configuration at the GPU's lowest clock: rendered 50.6 frames/s with real internet over Wi-Fi (runs `155b`, `8177`).
+
+The story of each step is on [Milestones](MILESTONES.md); each hardware block has a page under [Components](components/index.md); the
+detailed list of what went wrong is on [Lessons](LESSONS.md); the reusable stages are on the [Porting blueprint](BLUEPRINT.md).

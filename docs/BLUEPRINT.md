@@ -1,12 +1,16 @@
 # Porting blueprint: XNU + iOS on hardware that never ran it
 
-**Last verified: 2026-11-15.** The stages that worked for PixOS, written so they apply to any device and any iOS build.
+**Last verified: 2026-11-16.** The stages that worked for PixOS, written so they apply to any device and any iOS build.
 For each stage: what you must find out about **your** device, the tools, the **oracle** that proves the stage works, our Pixel 6a
 example (with run labels; *observed on hardware* unless tagged otherwise) and the pitfalls we hit.
 
 Everything observed here was seen on **one** phone: a Pixel 6a ("bluejay", Tensor G1 / gs101). For your device every line is a
 question to answer, not a fact. The working rules behind it are on [Method](METHOD.md); what went wrong on the way is on [Lessons](LESSONS.md);
 copy-paste prompts for an LLM agent are on [LLM prompts](PROMPTS.md).
+
+!!! tip "Stage or component?"
+    This page is the **recipe**, stage by stage, for any device. For what each block actually took on the Pixel 6a (what worked,
+    what did not, what nobody tried, patch numbers) read its page under [Components](components/index.md).
 
 ## The shape of a port
 
@@ -191,7 +195,7 @@ mode and clocks of the bus; button GPIOs; how iOS's HID stack expects digitizer 
 
 **Our example:** STMicro FTM5 on SPI, ID `36 48` (2026-10-22); the first stall was an **unpowered chip**: its two regulator rails were off after
 the bootloader, and the shim now switches them on before XNU (runs `touchx3`, `touchx5`, 2026-10-22). With the GPU path up: 85 touch-controller
-events in run `demo-gpu-touch-wifi` (2026-11-04). Buttons: the driver reads the GPIO banks; no key press tested.
+events in run `demo-gpu-touch-wifi` (2026-11-04). Buttons: the driver reads the GPIO banks; power and volume-up presses were logged in runs `resident-164801-b1` and `resident-204614-b1` (2026-11-11/12), the iOS reaction was not checked.
 
 **Pitfalls:** six patches went into SPI clocks, muxes and transfer recipes before anyone checked power. An unpowered chip reads as all-ones or
 all-zeros depending on the pull. **Check power before bus timing.**

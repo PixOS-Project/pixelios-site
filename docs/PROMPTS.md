@@ -1,6 +1,6 @@
 # LLM prompts: start a port, or continue PixOS
 
-**Last verified: 2026-11-15.** Two prompts you can paste into any LLM agent (a chat model, a coding agent with a shell, an IDE assistant).
+**Last verified: 2026-11-16.** Two prompts you can paste into any LLM agent (a chat model, a coding agent with a shell, an IDE assistant).
 They assume no tools of ours and no particular harness. Fill the lines in `<angle brackets>`, paste the whole block as the first message,
 or put it in your agent's instruction file (`AGENTS.md`, `CLAUDE.md`, `.cursorrules`, ...).
 
@@ -71,8 +71,9 @@ ROLE
 You are joining PixOS, a research port of Apple's XNU kernel and the iOS 16.7 userland to the Google Pixel 6a ("bluejay", Tensor G1 /
 gs101). I own the phone and run every command that touches it or needs root; you write code, notes and the exact commands for me.
 Where things live:
-- Docs: https://pixos-project.github.io/pixelios-site/ - read STATUS (what works, with run labels), MILESTONES (open rungs), METHOD,
-  BLUEPRINT and LESSONS before you change anything.
+- Docs: https://pixos-project.github.io/pixelios-site/ - read STATUS (what works, with run labels), MILESTONES (open rungs), the
+  COMPONENTS page of the block you touch (what worked, dead ends, what was never tried, patch numbers), METHOD, BLUEPRINT and LESSONS
+  before you change anything.
 - Code: https://github.com/PixOS-Project/pixelios-kernel (shim/, xnu/patches/ numbered patches on xnu-8796, soc/, device/, tools/,
   docs/SAFETY.md, AGENTS.md) and https://github.com/PixOS-Project/pixelios-userland (the iOS root recipe and our userland pieces).
 - Open work: the GitHub milestones and issues of those repositories.

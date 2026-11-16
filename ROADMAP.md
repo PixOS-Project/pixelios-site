@@ -1,7 +1,10 @@
 # Roadmap
 
-**Last verified: 2026-11-15.** What works is in [docs/STATUS.md](docs/STATUS.md) (each row names the run it was seen in). The measured ladder is in
-[docs/MILESTONES.md](docs/MILESTONES.md). This page lists what comes next. Order and estimates are guesses, not promises.
+**Last verified: 2026-11-16.** This page lists what comes next, in the order the maintainers intend. Order and estimates are guesses, not promises.
+
+- What works today: [docs/STATUS.md](docs/STATUS.md) (each row names the run it was seen in).
+- How each milestone was reached: [docs/MILESTONES.md](docs/MILESTONES.md). What would prove each open one: [open milestones](docs/milestones/open.md).
+- Ideas per hardware block, including blocks nobody has started: [components](docs/components/index.md).
 
 ## Reached (observed on hardware)
 
